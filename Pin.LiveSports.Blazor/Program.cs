@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Pin.LiveSports.Blazor.Data;
+using Pin.LiveSports.Blazor.Hubs;
+using Pin.LiveSports.Blazor.Constants;
+using Pin.LiveSports.Core.Services;
+using Pin.LiveSports.Core.Services.Interfaces;
 
 namespace Pin.LiveSports.Blazor
 {
@@ -14,6 +16,9 @@ namespace Pin.LiveSports.Blazor
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
+
+            builder.Services.AddSingleton<IReportService, ReportService>();
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
 
@@ -33,6 +38,7 @@ namespace Pin.LiveSports.Blazor
 
             app.MapBlazorHub();
             app.MapFallbackToPage("/_Host");
+            app.MapHub<LiveReportHub>(AppConstants.HubUrl);
 
             app.Run();
         }

@@ -1,9 +1,74 @@
 ﻿@page "/"
 
+@inject NavigationManager Navigation
+@inject IReportService ReportService
+
+@implements IAsyncDisposable
+
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Ewel</h1>
 
-Welcome to your new app.
+<div class="form-group">
+	<label>
+		User: 
+		<input @bind="userInput"/>
+	</label>
+</div>
+<div>
+	<label>
+		Message:
+		<input @bind="messageInput" size="50"/>
+	</label>
+</div>
+<button @onclick="Send" disabled="@(!IsConnected)">Send</button>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<hr>
+
+<ul id="messageList">
+	@foreach (var message in messages){
+		<li>@message</li>
+	}
+</ul>
+
+@code{
+	private HubConnection? hubConnection;
+	private List<string> messages = new();
+	private string? userInput = "";
+	private string? messageInput = "";
+
+	protected override async Task OnInitializedAsync()
+	{
+		hubConnection = new HubConnectionBuilder()
+			.WithUrl(Navigation.ToAbsoluteUri(AppConstants.HubUrl))
+			.Build();
+
+		hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+		{
+			messages = ReportService.Messages();
+			InvokeAsync(StateHasChanged);
+		});
+
+		await hubConnection.StartAsync();
+	}
+
+	private async Task Send()
+	{
+		if (hubConnection is not null)
+		{
+			await hubConnection.SendAsync("SendMessage", userInput, messageInput);
+		}
+	}
+
+	public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+	public async ValueTask DisposeAsync() 
+	{
+		if (hubConnection is not null)
+		{
+			await hubConnection.DisposeAsync();
+		}	
+	}
+}
+
+

@@ -1,0 +1,21 @@
+﻿using Microsoft.AspNetCore.SignalR;
+using Pin.LiveSports.Core.Services.Interfaces;
+
+namespace Pin.LiveSports.Blazor.Hubs
+{
+    public class LiveReportHub : Hub
+    {
+        private readonly IReportService _reportService;
+
+        public LiveReportHub(IReportService reportService)
+        {
+            _reportService = reportService;
+        }
+
+        public async Task SendMessage(string name, string message)
+        {
+            _reportService.AddAnnouncement($"{name}: {message}");
+            await Clients.All.SendAsync("ReceiveMessage", name, message);
+        }
+    }
+}
