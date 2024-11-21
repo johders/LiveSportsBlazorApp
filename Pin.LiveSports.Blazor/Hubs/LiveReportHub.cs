@@ -15,7 +15,7 @@ namespace Pin.LiveSports.Blazor.Hubs
         public async Task SendMessage(string name, string message)
         {
             _reportService.AddAnnouncement($"{name}: {message}");
-            await Clients.All.SendAsync("ReceiveMessage", name, message);
+            await Clients.Others.SendAsync("ReceiveMessage", name, message);
         }
     }
 }

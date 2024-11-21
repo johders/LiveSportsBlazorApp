@@ -9,24 +9,9 @@
 
 <h1>Ewel</h1>
 
-<div class="form-group">
-	<label>
-		User: 
-		<input @bind="userInput"/>
-	</label>
-</div>
-<div>
-	<label>
-		Message:
-		<input @bind="messageInput" size="50"/>
-	</label>
-</div>
-<button @onclick="Send" disabled="@(!IsConnected)">Send</button>
-
-<hr>
-
 <ul id="messageList">
-	@foreach (var message in messages){
+	@foreach (var message in messages)
+	{
 		<li>@message</li>
 	}
 </ul>
@@ -34,8 +19,6 @@
 @code{
 	private HubConnection? hubConnection;
 	private List<string> messages = new();
-	private string? userInput = "";
-	private string? messageInput = "";
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -51,16 +34,6 @@
 
 		await hubConnection.StartAsync();
 	}
-
-	private async Task Send()
-	{
-		if (hubConnection is not null)
-		{
-			await hubConnection.SendAsync("SendMessage", userInput, messageInput);
-		}
-	}
-
-	public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 
 	public async ValueTask DisposeAsync() 
 	{
