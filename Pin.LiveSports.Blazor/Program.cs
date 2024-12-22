@@ -18,6 +18,7 @@ namespace Pin.LiveSports.Blazor
             builder.Services.AddSingleton<WeatherForecastService>();
 
             builder.Services.AddSingleton<IReportService, ReportService>();
+            builder.Services.AddSingleton<ICompetitionService, CompetitionService>();
             builder.Services.AddSignalR();
 
             var app = builder.Build();
