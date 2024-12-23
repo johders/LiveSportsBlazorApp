@@ -1,6 +1,14 @@
 ﻿<div class="m-auto text-center border w-100 bg-info bg-opacity-25 p-5 my-3 rounded-3">
     <h3>Reporter Dashboard</h3>
     <button class="btn btn-primary" @onclick="ShowManualLogForm">Manual Log</button>
+    <button class="btn btn-warning text-dark" @onclick="ShowYellowCardLogForm">
+        <img src="images/yellow-card.png" alt="Yellow Card" class="img-fluid" style="max-height: 20px;" />
+        Yellow Card Log
+    </button>
+    <button class="btn btn-danger text-light" @onclick="ShowRedCardLogForm">
+        <img src="images/red-card.png" alt="Red Card" class="img-fluid" style="max-height: 20px;" />
+        Red Card Log
+    </button>
     <button class="btn btn-secondary" disabled>Another Log</button>
     <!-- Add more buttons here for different log components -->
 </div>
@@ -11,5 +19,15 @@
     private async Task ShowManualLogForm()
     {
         await OnLogTypeSelected.InvokeAsync("Manual");
+    }
+
+    private async Task ShowYellowCardLogForm()
+    {
+        await OnLogTypeSelected.InvokeAsync("YellowCard");
+    }
+
+    private async Task ShowRedCardLogForm()
+    {
+        await OnLogTypeSelected.InvokeAsync("RedCard");
     }
 }

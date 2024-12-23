@@ -24,6 +24,20 @@
 				   IsConnected="IsConnected"
 				   OnClose="CloseLogForm" />
 }
+else if (selectedLogType == "YellowCard")
+{
+	<YellowCardLogForm Matchup="matchup"
+					   HubConnection="hubConnection"
+					   IsConnected="IsConnected"
+					   OnClose="CloseLogForm" />
+}
+else if (selectedLogType == "RedCard")
+{
+	<RedCardLogForm Matchup="matchup"
+					HubConnection="hubConnection"
+					IsConnected="IsConnected"
+					OnClose="CloseLogForm" />
+}
 else if (selectedLogType == "AnotherLog")
 {
 	<!-- Future log components can go here -->

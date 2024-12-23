@@ -22,6 +22,17 @@
 			</div>
 		}
 	</div>
+
+	@foreach (var log in liveMatchup?.EventLogs ?? Enumerable.Empty<ReportEventLog>())
+	{
+		<div class="border p-3 my-2">
+			@if (log.Type == "Yellow Card")
+			{
+				<img src="images/yellow-card.png" alt="Yellow Card" class="img-fluid me-2" style="max-height: 20px;" />
+			}
+			<span>@log.Minute' - @log.Description (@log.Player)</span>
+		</div>
+	}
 }
 
 @code {
