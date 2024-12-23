@@ -8,6 +8,11 @@
 
 <PageTitle>World Cup Live</PageTitle>
 
+@if (liveMatchup != null)
+{
+	<MatchupDisplay Matchup="liveMatchup" />
+}
+
 <ul id="messageList">
 	@foreach (var message in messages)
 	{
@@ -19,6 +24,8 @@
 	private HubConnection? hubConnection;
 	private List<string> messages = new();
 
+	private Matchup? liveMatchup;
+
 	protected override async Task OnInitializedAsync()
 	{
 		hubConnection = new HubConnectionBuilder()
@@ -28,6 +35,12 @@
 		hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
 		{
 			messages = ReportService.Messages();
+			InvokeAsync(StateHasChanged);
+		});
+
+		hubConnection.On<Matchup>("ReceiveMatchup", (matchup) =>
+		{
+			liveMatchup = matchup;
 			InvokeAsync(StateHasChanged);
 		});
 

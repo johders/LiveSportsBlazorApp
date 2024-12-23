@@ -24,6 +24,17 @@ namespace Pin.LiveSports.Core.Services
 
                 var teams = root?.Teams ?? new List<Team>();
 
+                foreach (var team in teams)
+                {
+                    foreach (var player in team.Squad)
+                    {
+                        if (string.IsNullOrWhiteSpace(player.Position))
+                        {
+                            player.Position = "Midfield";
+                        }
+                    }
+                }
+
                 result.Data = teams;
                 return result;
             }
@@ -86,11 +97,30 @@ namespace Pin.LiveSports.Core.Services
         {
             var random = new Random();
 
-            var shuffledSquad = team.Squad.OrderBy(_ => random.Next()).ToList();
+            var goalkeepers = team.Squad.Where(player => player.Position.Equals("Goalkeeper", StringComparison.OrdinalIgnoreCase)).ToList();
+            var otherPlayers = team.Squad.Where(player => !player.Position.Equals("Goalkeeper", StringComparison.OrdinalIgnoreCase)).ToList();
 
-            for (int i = 0; i < shuffledSquad.Count; i++)
+            if (goalkeepers.Count == 0)
             {
-                shuffledSquad[i].IsPlaying = i < 11;
+                throw new InvalidOperationException($"Team {team.Name} does not have a goalkeeper.");
+            }
+
+            var selectedGoalkeeper = goalkeepers[random.Next(goalkeepers.Count)];
+            selectedGoalkeeper.IsPlaying = true;
+
+            var shuffledOtherPlayers = otherPlayers.OrderBy(_ => random.Next()).ToList();
+
+            for (int i = 0; i < shuffledOtherPlayers.Count; i++)
+            {
+                shuffledOtherPlayers[i].IsPlaying = i < 10;
+            }
+
+            foreach (var player in team.Squad)
+            {
+                if (!player.IsPlaying)
+                {
+                    player.IsPlaying = false;
+                }
             }
         }
     }

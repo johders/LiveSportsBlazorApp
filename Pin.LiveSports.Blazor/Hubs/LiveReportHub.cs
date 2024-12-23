@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Pin.LiveSports.Core.Models;
 using Pin.LiveSports.Core.Services.Interfaces;
 
 namespace Pin.LiveSports.Blazor.Hubs
@@ -10,6 +11,12 @@ namespace Pin.LiveSports.Blazor.Hubs
         public LiveReportHub(IReportService reportService)
         {
             _reportService = reportService;
+        }
+
+        public async Task SendMatchup(Matchup matchup)
+        {
+            _reportService.GetMatchup(matchup);
+            await Clients.Others.SendAsync("ReceiveMatchup", matchup);
         }
 
         public async Task SendMessage(string name, string message)
