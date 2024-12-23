@@ -16,41 +16,24 @@
     <MatchupDisplay Matchup="matchup" />
 }
 
-<h5>Manual Event Log</h5>
-<div class="form-group">
-	<label>Minute:</label>
-	<input type="number" @bind="eventMinute" class="form-control" />
-</div>
-<div class="form-group">
-	<label>Description:</label>
-	<input type="text" @bind="eventDescription" class="form-control" />
-</div>
-<div class="form-group">
-	<label>Details:</label>
-	<textarea @bind="eventDetails" class="form-control"></textarea>
-</div>
-<div class="form-group">
-	<button class="btn btn-info" @onclick="SendLogEvent">Submit Event</button>
-</div>
+<ReporterDashboard OnLogTypeSelected="HandleLogTypeSelected" />
 
-<h5>Score Update</h5>
-<div class="form-group">
-	<button class="btn btn-primary" @onclick="UpdateScore">Update Score</button>
-</div>
+@if (selectedLogType == "Manual")
+{
+	<ManualLogForm HubConnection="hubConnection"
+				   IsConnected="IsConnected"
+				   OnClose="CloseLogForm" />
+}
+else if (selectedLogType == "AnotherLog")
+{
+	<!-- Future log components can go here -->
+}
 
 @code {
 	private HubConnection? hubConnection;
 
 	private Matchup? matchup;
-	private int eventMinute;
-	private string eventDescription = string.Empty;
-	private string eventDetails = string.Empty;
-
-	private string? selectedTeam;
-	private string? selectedPlayer;
-	private string? selectedCard;
-	private string? selectedPlayerOut;
-	private string? selectedPlayerIn;
+	private string? selectedLogType;
 
 	private async Task GenerateMatchup()
 	{
@@ -66,31 +49,15 @@
 			}
 		}
 	}
-	
-	private async Task SendLogEvent()
-	{
-		var log = new ReportEventLog
-			{
-				Minute = eventMinute,
-				Type = "Manual",
-				Description = eventDescription,
-				Details = eventDetails,
-			};
 
-		if (hubConnection is not null && IsConnected)
-		{
-			await hubConnection.SendAsync("SendEventLog", log);
-		}
+	private void HandleLogTypeSelected(string logType)
+	{
+		selectedLogType = logType;
 	}
 
-
-	private async Task UpdateScore()
+	private void CloseLogForm()
 	{
-		if (matchup != null && hubConnection is not null)
-		{
-			matchup.TeamAScore++;
-			await hubConnection.SendAsync("SendScoreUpdate", matchup.TeamA.Name, matchup.TeamAScore, matchup.TeamBScore);
-		}
+		selectedLogType = null;
 	}
 
 	protected override async Task OnInitializedAsync()

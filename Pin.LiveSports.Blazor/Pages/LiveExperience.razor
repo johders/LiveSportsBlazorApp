@@ -24,17 +24,8 @@
 	</div>
 }
 
-<ul id="messageList">
-	@foreach (var message in messages)
-	{
-		<li>@message</li>
-	}
-</ul>
-
 @code {
 	private HubConnection? hubConnection;
-	private List<string> messages = new();
-
 	private Matchup? liveMatchup;
 
 	protected override async Task OnInitializedAsync()
@@ -42,12 +33,6 @@
 		hubConnection = new HubConnectionBuilder()
 			.WithUrl(Navigation.ToAbsoluteUri(AppConstants.HubUrl))
 			.Build();
-
-		hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
-		{
-			messages = ReportService.GetMessages();
-			InvokeAsync(StateHasChanged);
-		});
 
 		hubConnection.On<Matchup>("ReceiveMatchup", (matchup) =>
 		{

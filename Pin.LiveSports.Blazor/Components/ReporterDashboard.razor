@@ -1,0 +1,15 @@
+﻿<div>
+    <h3>Reporter Dashboard</h3>
+    <button class="btn btn-primary" @onclick="ShowManualLogForm">Manual Log</button>
+    <button class="btn btn-secondary" disabled>Another Log</button>
+    <!-- Add more buttons here for different log components -->
+</div>
+
+@code {
+    [Parameter] public EventCallback<string> OnLogTypeSelected { get; set; }
+
+    private async Task ShowManualLogForm()
+    {
+        await OnLogTypeSelected.InvokeAsync("Manual");
+    }
+}

@@ -1,0 +1,46 @@
+﻿<h5>Manual Event Log</h5>
+<div class="form-group">
+    <label>Minute:</label>
+    <input type="number" @bind="eventMinute" class="form-control" />
+</div>
+<div class="form-group">
+    <label>Description:</label>
+    <input type="text" @bind="eventDescription" class="form-control" />
+</div>
+<div class="form-group">
+    <label>Details:</label>
+    <textarea @bind="eventDetails" class="form-control"></textarea>
+</div>
+
+<div class="form-group">
+    <button class="btn btn-info" @onclick="SubmitLog">Submit</button>
+    <button class="btn btn-secondary" @onclick="OnClose">Close</button>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public HubConnection? HubConnection { get; set; }
+    [Parameter] public bool IsConnected { get; set; }
+
+    private int eventMinute;
+    private string eventDescription = string.Empty;
+    private string eventDetails = string.Empty;
+
+    private async Task SubmitLog()
+    {
+        var log = new ReportEventLog
+            {
+                Minute = eventMinute,
+                Type = "Manual",
+                Description = eventDescription,
+                Details = eventDetails,
+            };
+
+        if (HubConnection is not null && IsConnected)
+        {
+            await HubConnection.SendAsync("SendEventLog", log);
+        }
+
+        await OnClose.InvokeAsync();
+    }
+}
