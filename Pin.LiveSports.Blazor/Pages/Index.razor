@@ -1,100 +1,16 @@
 ﻿@page "/"
-@using Pin.LiveSports.Core.Dtos
-@inject ICompetitionService CompetitionService
 
 @inject NavigationManager Navigation
 @inject IReportService ReportService
 
-@implements IAsyncDisposable
-
 <PageTitle>Home</PageTitle>
 
-<h1>World Cup Teams</h1>
+<h1>Where are you going?</h1>
 
-@if (isLoading)
-{
-	<p>Loading teams...</p>
-}
-else if (errorMessage is not null)
-{
-	<p class="text-danger">@errorMessage</p>
-}
-else if (teams.Any())
-{
-	<ul id="teamsList">
-		@foreach (var team in teams)
-		{
-			<li>
-				<img src="@team.Crest" alt="@team.Name" style="width: 50px; height: auto;" />
-				<span>@team.Name</span>
-			</li>
-		}
-	</ul>
-}
-else
-{
-	<p>No teams found.</p>
-}
+<a class="nav-link" href="live">Experience Live</a>
 
-<ul id="messageList">
-	@foreach (var message in messages)
-	{
-		<li>@message</li>
-	}
-</ul>
+<a class="nav-link" href="reporter">Report</a>
 
-@code{
-	private HubConnection? hubConnection;
-	private List<string> messages = new();
 
-	private List<Team> teams = new();
-	private bool isLoading = true;
-	private string? errorMessage;
-
-	protected override async Task OnInitializedAsync()
-	{
-		hubConnection = new HubConnectionBuilder()
-			.WithUrl(Navigation.ToAbsoluteUri(AppConstants.HubUrl))
-			.Build();
-
-		hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
-		{
-			messages = ReportService.Messages();
-			InvokeAsync(StateHasChanged);
-		});
-
-		await hubConnection.StartAsync();
-
-		try
-        {
-            // Fetch teams from the service
-            var result = await CompetitionService.GetAllTeamsAsync();
-            if (result.Success)
-            {
-                teams = result.Data.ToList();
-            }
-            else
-            {
-                errorMessage = "An unknown error occurred.";
-            }
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"An unexpected error occurred: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
-        }
-	}
-
-	public async ValueTask DisposeAsync() 
-	{
-		if (hubConnection is not null)
-		{
-			await hubConnection.DisposeAsync();
-		}	
-	}
-}
 
 
