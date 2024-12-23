@@ -1,0 +1,44 @@
+﻿.time-indicator {
+    background-color: black;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    width: 60px;
+}
+
+.bi-clock{
+    color: greenyellow;
+}
+
+.vertical-line {
+    background-color: #d3d3d3; 
+    width: 2px;
+    height: 100%;
+}
+
+.card-event {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.card-icon {
+    max-height: 40px;
+}
+
+.manual-event {
+    background-color: white;
+    color: black;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.player-carded {
+    border-bottom: 3px solid greenyellow;
+}

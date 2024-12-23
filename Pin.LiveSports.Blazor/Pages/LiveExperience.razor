@@ -12,27 +12,44 @@
 {
 	<MatchupDisplay Matchup="liveMatchup" />
 
-	<h5>Event Logs</h5>
-	<div>
-		@foreach (var log in liveMatchup.EventLogs)
+	<h5>Fase per fase</h5>
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+	<div class="container">
+		@foreach (var log in liveMatchup?.EventLogs ?? Enumerable.Empty<ReportEventLog>())
 		{
-			<div class="alert alert-secondary">
-				<strong>@log.Minute':</strong> @log.Description<br />
-				<em>@log.Details</em>
+			<div class="row align-items-start mb-4">
+				<div class="col-1 d-flex flex-column align-items-center">
+					<div class="time-indicator">
+						<i class="bi bi-clock me-2"></i> @log.Minute'
+					</div>
+					<div class="vertical-line flex-grow-1"></div>
+				</div>
+
+				<div class="col-7">
+					@if (log.Type.Contains("Card"))
+					{
+						<div class="card-event d-flex align-items-center p-2 bg-light">
+							<img src="images/@(log.Type == "Yellow Card" ? "yellow-card.png" : "red-card.png")"
+								 alt="@log.Type" class="card-icon me-3" />
+							<div>
+								<h5 class="mb-0 player-carded">@log.Player</h5>
+								<p class="mb-0 text-muted">@log.Team</p>
+							</div>
+						</div>
+					}
+					else if (log.Type == "Manual")
+					{
+						<div class="manual-event p-3">
+							<h5>@log.Description</h5>
+							<p class="mb-0 text-muted">@log.Details</p>
+						</div>
+					}
+				</div>
 			</div>
 		}
 	</div>
-
-	@foreach (var log in liveMatchup?.EventLogs ?? Enumerable.Empty<ReportEventLog>())
-	{
-		<div class="border p-3 my-2">
-			@if (log.Type == "Yellow Card")
-			{
-				<img src="images/yellow-card.png" alt="Yellow Card" class="img-fluid me-2" style="max-height: 20px;" />
-			}
-			<span>@log.Minute' - @log.Description (@log.Player)</span>
-		</div>
-	}
 }
 
 @code {
