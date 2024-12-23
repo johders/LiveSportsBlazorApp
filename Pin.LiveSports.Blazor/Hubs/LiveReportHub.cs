@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Pin.LiveSports.Core.Models;
 using Pin.LiveSports.Core.Services.Interfaces;
+using System.Diagnostics;
 
 namespace Pin.LiveSports.Blazor.Hubs
 {
@@ -15,14 +16,19 @@ namespace Pin.LiveSports.Blazor.Hubs
 
         public async Task SendMatchup(Matchup matchup)
         {
-            _reportService.GetMatchup(matchup);
+            _reportService.SetMatchup(matchup);
             await Clients.Others.SendAsync("ReceiveMatchup", matchup);
         }
 
-        public async Task SendMessage(string name, string message)
+        public async Task SendScoreUpdate(string teamName, int teamAScore, int teamBScore)
         {
-            _reportService.AddAnnouncement($"{name}: {message}");
-            await Clients.Others.SendAsync("ReceiveMessage", name, message);
+            await Clients.Others.SendAsync("ReceiveScoreUpdate", teamName, teamAScore, teamBScore);
+        }
+
+        public async Task SendEventLog(ReportEventLog eventLog)
+        {
+            _reportService.SetEventLog(eventLog);
+            await Clients.Others.SendAsync("ReceiveEventLog", eventLog);
         }
     }
 }

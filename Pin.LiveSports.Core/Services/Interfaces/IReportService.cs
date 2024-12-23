@@ -4,8 +4,11 @@ namespace Pin.LiveSports.Core.Services.Interfaces
 {
     public interface IReportService
     {
-        List<string> Messages();
-        void AddAnnouncement(string message);
-        void GetMatchup(Matchup matchup);
+        List<string> GetMessages();
+        Matchup GetMatchup();
+        List<ReportEventLog> GetEventLogs();
+        void SetAnnouncement(string message);
+        void SetMatchup(Matchup matchup);
+        void SetEventLog(ReportEventLog eventLog);
     }
 }

@@ -11,6 +11,17 @@
 @if (liveMatchup != null)
 {
 	<MatchupDisplay Matchup="liveMatchup" />
+
+	<h5>Event Logs</h5>
+	<div>
+		@foreach (var log in liveMatchup.EventLogs)
+		{
+			<div class="alert alert-secondary">
+				<strong>@log.Minute':</strong> @log.Description<br />
+				<em>@log.Details</em>
+			</div>
+		}
+	</div>
 }
 
 <ul id="messageList">
@@ -34,13 +45,23 @@
 
 		hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
 		{
-			messages = ReportService.Messages();
+			messages = ReportService.GetMessages();
 			InvokeAsync(StateHasChanged);
 		});
 
 		hubConnection.On<Matchup>("ReceiveMatchup", (matchup) =>
 		{
-			liveMatchup = matchup;
+			liveMatchup = ReportService.GetMatchup();
+			InvokeAsync(StateHasChanged);
+		});
+
+		hubConnection.On<ReportEventLog>("ReceiveEventLog", (eventLog) =>
+		{
+			if (liveMatchup is not null)
+			{
+				liveMatchup.EventLogs = ReportService.GetEventLogs();
+			}
+
 			InvokeAsync(StateHasChanged);
 		});
 

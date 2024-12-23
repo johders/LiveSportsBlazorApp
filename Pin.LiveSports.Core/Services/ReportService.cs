@@ -8,20 +8,34 @@ namespace Pin.LiveSports.Core.Services
         private readonly List<string> _messages = new();
         private Matchup _matchup = new();
 
-        public List<string> Messages()
+        public List<string> GetMessages()
         {
             return _messages;
         }
 
-        public void AddAnnouncement(string message)
+        public List<ReportEventLog> GetEventLogs()
+        {
+            return _matchup.EventLogs;
+        }
+
+        public Matchup GetMatchup()
+        {
+            return _matchup;
+        }
+
+        public void SetAnnouncement(string message)
         {
             _messages.Add(message);
         }
 
-        public void GetMatchup(Matchup matchup)
+        public void SetMatchup(Matchup matchup)
         {
             _matchup = matchup;
         }
 
+        public void SetEventLog(ReportEventLog eventLog)
+        {
+            _matchup.EventLogs.Insert(0, eventLog);
+        }
     }
 }
