@@ -1,0 +1,58 @@
+﻿<div class="row text-center border w-75 m-auto bg-opacity-25 bg-secondary rounded-3 my-3">
+
+    <div class="col-md-5 p-3 my-4">
+        <img src="@Matchup.TeamA.Crest" alt="@Matchup.TeamA.Name Crest" class="img-fluid mb-2" style="max-height: 100px;" />
+        <h4>@Matchup.TeamA.Name</h4>
+    </div>
+
+    <div class="col-md-2 d-flex align-items-center justify-content-center">
+        <p class="h1 fw-bold">0 - 0</p>
+    </div>
+
+    <div class="col-md-5 p-3 my-4">
+        <img src="@Matchup.TeamB.Crest" alt="@Matchup.TeamB.Name Crest" class="img-fluid mb-2" style="max-height: 100px;" />
+        <h4>@Matchup.TeamB.Name</h4>
+    </div>
+</div>
+
+@* <div class="row mt-4">
+
+    <div class="col-md-6">
+        <h5>@Matchup.TeamA.Name - Playing</h5>
+        <ul>
+            @foreach (var player in Matchup.TeamA.Squad.Where(p => p.IsPlaying))
+            {
+                <li>@player.Name (@player.Position)</li>
+            }
+        </ul>
+        <h5>@Matchup.TeamA.Name - Benched</h5>
+        <ul>
+            @foreach (var player in Matchup.TeamA.Squad.Where(p => !p.IsPlaying))
+            {
+                <li>@player.Name (@player.Position)</li>
+            }
+        </ul>
+    </div>
+
+    <div class="col-md-6">
+        <h5>@Matchup.TeamB.Name - Playing</h5>
+        <ul>
+            @foreach (var player in Matchup.TeamB.Squad.Where(p => p.IsPlaying))
+            {
+                <li>@player.Name (@player.Position)</li>
+            }
+        </ul>
+        <h5>@Matchup.TeamB.Name - Benched</h5>
+        <ul>
+            @foreach (var player in Matchup.TeamB.Squad.Where(p => !p.IsPlaying))
+            {
+                <li>@player.Name (@player.Position)</li>
+            }
+        </ul>
+    </div>
+</div> *@
+
+@code {
+    [Parameter]
+    public Matchup Matchup { get; set; }
+}

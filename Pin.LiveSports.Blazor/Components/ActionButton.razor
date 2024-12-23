@@ -1,0 +1,19 @@
+﻿<button class="btn @ButtonClass mt-3 m-auto d-block"
+        @onclick="OnClick"
+        disabled="@IsDisabled">
+    @ButtonText
+</button>
+
+@code {
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public bool IsDisabled { get; set; } = false;
+
+    [Parameter]
+    public string ButtonText { get; set; } = "Click Me";
+
+    [Parameter]
+    public string ButtonClass { get; set; } = "btn-primary";
+}

@@ -2,10 +2,19 @@
 
 @inject NavigationManager Navigation
 @inject IReportService ReportService
+@inject ICompetitionService CompetitionService
 
 <PageTitle>Report</PageTitle>
 
-<h3>Reporter</h3>
+<ActionButton ButtonText="Get Today's' Matchup"
+			  ButtonClass="btn-success"
+			  OnClick="GenerateMatchup"
+			  IsDisabled="@(matchup != null)" />
+
+@if (matchup != null)
+{
+    <MatchupDisplay Matchup="matchup" />
+}
 
 <div class="form-group">
 	<label>
@@ -26,6 +35,8 @@
 	private string? userInput = "";
 	private string? messageInput = "";
 
+	private Matchup? matchup;
+
 	protected override async Task OnInitializedAsync()
 	{
 		hubConnection = new HubConnectionBuilder()
@@ -33,6 +44,16 @@
 			.Build();
 
 		await hubConnection.StartAsync();
+	}
+
+	private async Task GenerateMatchup()
+	{
+		var matchupResult = await CompetitionService.GenerateMatchupAsync();
+
+		if (matchupResult.Success)
+		{
+			matchup = matchupResult.Data;
+		}
 	}
 
 	private async Task Send()
