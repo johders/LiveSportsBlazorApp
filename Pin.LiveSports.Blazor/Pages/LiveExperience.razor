@@ -46,6 +46,20 @@
 							<p class="mb-0 text-muted">@log.Details</p>
 						</div>
 					}
+					else if (log.Type == "Substitution")
+					{
+						<div class="substitution-event p-3">
+							<h5>@log.Description</h5>
+							<p class="mb-0 text-muted">@log.Details</p>
+						</div>
+					}
+					else if (log.Type == "Goal")
+					{
+						<div class="substitution-event p-3">
+							<h5>@log.Description</h5>
+							<p class="mb-0 text-muted">@log.Details</p>
+						</div>
+					}
 				</div>
 			</div>
 		}
@@ -63,14 +77,14 @@
 			.Build();
 
 		hubConnection.On<int>("UpdateMinute", (minute) =>
-	{
-	if (liveMatchup is not null)
-	{
-		liveMatchup.CurrentMinute = minute;
-	}
+		{
+			if (liveMatchup is not null)
+			{
+				liveMatchup.CurrentMinute = minute;
+			}
 
-	InvokeAsync(StateHasChanged);
-	});
+		InvokeAsync(StateHasChanged);
+		});
 
 		hubConnection.On<Matchup>("ReceiveMatchup", (matchup) =>
 		{
@@ -83,6 +97,17 @@
 			if (liveMatchup is not null)
 			{
 				liveMatchup.EventLogs = ReportService.GetEventLogs();
+			}
+
+			InvokeAsync(StateHasChanged);
+		});
+
+		hubConnection.On<string, int, int>("ReceiveScoreUpdate", (teamName, teamAScore, teamBScore) =>
+		{
+			if (liveMatchup is not null)
+			{
+				liveMatchup.TeamAScore = teamAScore;
+				liveMatchup.TeamBScore = teamBScore;
 			}
 
 			InvokeAsync(StateHasChanged);

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Pin.LiveSports.Core.Models;
 using Pin.LiveSports.Core.Services.Interfaces;
-using System.Diagnostics;
 
 namespace Pin.LiveSports.Blazor.Hubs
 {

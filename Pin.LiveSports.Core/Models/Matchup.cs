@@ -11,6 +11,17 @@ namespace Pin.LiveSports.Core.Models
         public int CurrentMinute { get; set; }
         public List<ReportEventLog> EventLogs { get; set; } = new List<ReportEventLog>();
 
+        public void LogManualEvent(int minute, string description, string details)
+        {
+            EventLogs.Add(new ReportEventLog
+            {
+                Minute = minute,
+                Type = "Manual",
+                Description = description,
+                Details = details,
+            });
+        }
+
         public void LogYellowCard(string teamName, string playerName, int minute)
         {
             var team = GetTeamByName(teamName);
@@ -43,6 +54,46 @@ namespace Pin.LiveSports.Core.Models
                     Player = playerName,
                     Description = $"{playerName} received a red card and is disqualified.",
                     Details = $"Red card issued to {playerName} at minute {minute}.",
+                });
+            }
+        }
+
+        public void LogSubstitution(string teamName, string playerIn, string playerOut, int minute)
+        {
+            var team = GetTeamByName(teamName);
+            if (team != null)
+            {
+                team.PerformSubstitution(playerIn, playerOut);
+                EventLogs.Add(new ReportEventLog
+                {
+                    Minute = minute,
+                    Type = "Substitution",
+                    Team = teamName,
+                    Player = $"{playerIn} in for {playerOut}",
+                    Description = $"Substitution: {playerIn} replaced {playerOut}.",
+                    Details = $"{playerIn} subbed in for {playerOut} at minute {minute}.",
+                });
+            }
+        }
+
+        public void LogGoal(string teamName, string playerName, int minute)
+        {
+            var team = GetTeamByName(teamName);
+            if (team != null)
+            {
+                if (teamName == TeamA.Name)
+                    TeamAScore++;
+                else if (teamName == TeamB.Name)
+                    TeamBScore++;
+
+                EventLogs.Add(new ReportEventLog
+                {
+                    Minute = minute,
+                    Type = "Goal",
+                    Team = teamName,
+                    Player = playerName,
+                    Description = $"{playerName} scored a goal!",
+                    Details = $"Goal by {playerName} at minute {minute}.",
                 });
             }
         }

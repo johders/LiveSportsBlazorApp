@@ -29,5 +29,17 @@
             player.RedCardCount++;
             player.IsDisqualified = true;
         }
+
+        public void PerformSubstitution(string playerIn, string playerOut)
+        {
+            var playerGoingOut = Squad.FirstOrDefault(p => p.Name == playerOut);
+            var playerComingIn = Squad.FirstOrDefault(p => p.Name == playerIn);
+
+            if (playerGoingOut != null && playerComingIn != null)
+            {
+                playerGoingOut.IsPlaying = false;
+                playerComingIn.IsPlaying = true;
+            }
+        }
     }
 }

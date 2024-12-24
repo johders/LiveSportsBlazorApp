@@ -30,7 +30,8 @@
 
 	@if (selectedLogType == "Manual")
 	{
-		<ManualLogForm HubConnection="hubConnection"
+		<ManualLogForm Matchup="matchup"
+					   HubConnection="hubConnection"
 					   IsConnected="IsConnected"
 					   OnClose="CloseLogForm" />
 	}
@@ -47,6 +48,20 @@
 						HubConnection="hubConnection"
 						IsConnected="IsConnected"
 						OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "Substitution")
+	{
+		<SubstitutionLogForm Matchup="matchup"
+						HubConnection="hubConnection"
+						IsConnected="IsConnected"
+						OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "Goal")
+	{
+		<GoalLogForm Matchup="matchup"
+					 HubConnection="hubConnection"
+					 IsConnected="IsConnected"
+					 OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "AnotherLog")
 	{
