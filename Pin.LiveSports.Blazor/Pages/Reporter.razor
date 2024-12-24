@@ -23,7 +23,9 @@
 				  OnClick="ShowStopGameModal" />
 
 	<MatchupDisplay Matchup="matchup"/>
+}
 
+@if (isGameRunning){
 	<ReporterDashboard OnLogTypeSelected="HandleLogTypeSelected" />
 
 	@if (selectedLogType == "Manual")
