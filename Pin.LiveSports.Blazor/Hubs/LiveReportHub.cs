@@ -30,5 +30,10 @@ namespace Pin.LiveSports.Blazor.Hubs
             _reportService.SetEventLog(eventLog);
             await Clients.Others.SendAsync("ReceiveEventLog", eventLog);
         }
+
+        public async Task BroadcastMinute(int currentMinute)
+        {
+            await Clients.Others.SendAsync("UpdateMinute", currentMinute);
+        }
     }
 }

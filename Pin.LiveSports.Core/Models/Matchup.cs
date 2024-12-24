@@ -8,6 +8,7 @@ namespace Pin.LiveSports.Core.Models
         public int TeamAScore { get; set; }
         public Team TeamB { get; set; }
         public int TeamBScore { get; set; }
+        public int CurrentMinute { get; set; }
         public List<ReportEventLog> EventLogs { get; set; } = new List<ReportEventLog>();
 
         public void LogYellowCard(string teamName, string playerName, int minute)

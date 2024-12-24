@@ -62,6 +62,16 @@
 			.WithUrl(Navigation.ToAbsoluteUri(AppConstants.HubUrl))
 			.Build();
 
+		hubConnection.On<int>("UpdateMinute", (minute) =>
+	{
+	if (liveMatchup is not null)
+	{
+		liveMatchup.CurrentMinute = minute;
+	}
+
+	InvokeAsync(StateHasChanged);
+	});
+
 		hubConnection.On<Matchup>("ReceiveMatchup", (matchup) =>
 		{
 			liveMatchup = ReportService.GetMatchup();

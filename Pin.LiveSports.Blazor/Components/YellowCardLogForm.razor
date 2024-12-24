@@ -1,43 +1,50 @@
-﻿<div class="card p-4 my-3 shadow-lg w-75 m-auto">
-	<h5>Log Yellow Card</h5>
+﻿<div class="card shadow-lg border-0 bg-light my-3 w-75 m-auto">
 
-	<div class="form-group mb-3">
-		<label>Team:</label>
-		<select @onchange="HandleTeamSelection" class="form-control">
-			<option value="" disabled>Select a team</option>
-			@if (Matchup != null)
-			{
-				<option value="@Matchup.TeamA.Name">@Matchup.TeamA.Name</option>
-				<option value="@Matchup.TeamB.Name">@Matchup.TeamB.Name</option>
-			}
-		</select>
+	<div class="card-header bg-warning bg-opacity-75 text-white text-center">
+		<h5 class="mb-0">Yellow Card</h5>
 	</div>
 
-	@if (!string.IsNullOrEmpty(selectedTeam) && players.Count > 0)
-	{
-		<div class="form-group mb-3">
-			<label>Player:</label>
-			<select @bind="selectedPlayer" class="form-control">
-				<option value="" disabled>Select a player</option>
-				@foreach (var player in players)
+	<div class="card-body">
+
+		<div class="mb-3">
+			<label>Team:</label>
+			<select @onchange="HandleTeamSelection" class="form-control">
+				<option value="" disabled>Select a team</option>
+				@if (Matchup != null)
 				{
-					<option value="@player.Name">@player.Name</option>
+					<option value="@Matchup.TeamA.Name">@Matchup.TeamA.Name</option>
+					<option value="@Matchup.TeamB.Name">@Matchup.TeamB.Name</option>
 				}
 			</select>
 		</div>
-	}
 
-	<div class="form-group mb-3">
-		<label>Minute:</label>
-		<input type="number" @bind="eventMinute" class="form-control" />
-	</div>
 
-	<div class="form-group text-center">
-		<button class="btn btn-warning text-dark" @onclick="SubmitYellowCardLog">
-			<img src="images/yellow-card.png" alt="Yellow Card" class="img-fluid" style="max-height: 20px;" />
-			Submit
-		</button>
-		<button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+		@if (!string.IsNullOrEmpty(selectedTeam) && players.Count > 0)
+		{
+			<div class="mb-3">
+				<label>Player:</label>
+				<select @bind="selectedPlayer" class="form-control">
+					<option value="" disabled>Select a player</option>
+					@foreach (var player in players)
+					{
+						<option value="@player.Name">@player.Name</option>
+					}
+				</select>
+			</div>
+		}
+
+		<div class="mb-3">
+			<label>Minute:</label>
+			<input type="number" @bind="eventMinute" class="form-control" />
+		</div>
+
+		<div class="text-center">
+			<button class="btn btn-warning text-dark" @onclick="SubmitYellowCardLog">
+				<img src="images/yellow-card.png" alt="Yellow Card" class="img-fluid" style="max-height: 20px;" />
+				Submit
+			</button>
+			<button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+		</div>
 	</div>
 </div>
 

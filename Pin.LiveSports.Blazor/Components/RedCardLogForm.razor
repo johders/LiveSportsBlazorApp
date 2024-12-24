@@ -1,95 +1,100 @@
-﻿<div class="card p-4 my-3 shadow-lg w-75 m-auto">
-    <h5>Log Red Card</h5>
+﻿<div class="card shadow-lg border-0 bg-light my-3 w-75 m-auto">
 
-    <div class="form-group mb-3">
-        <label>Team:</label>
-        <select @onchange="HandleTeamSelection" class="form-control">
-            <option value="" disabled>Select a team</option>
-            @if (Matchup != null)
-            {
-                <option value="@Matchup.TeamA.Name">@Matchup.TeamA.Name</option>
-                <option value="@Matchup.TeamB.Name">@Matchup.TeamB.Name</option>
-            }
-        </select>
-    </div>
+	<div class="card-header bg-danger bg-opacity-75 text-white text-center">
+		<h5 class="mb-0">Red Card</h5>
+	</div>
 
-    @if (!string.IsNullOrEmpty(selectedTeam) && players.Count > 0)
-    {
-        <div class="form-group mb-3">
-            <label>Player:</label>
-            <select @bind="selectedPlayer" class="form-control">
-                <option value="" disabled>Select a player</option>
-                @foreach (var player in players)
-                {
-                    <option value="@player.Name">@player.Name</option>
-                }
-            </select>
-        </div>
-    }
+	<div class="card-body">
+		<div class="mb-3">
+			<label>Team:</label>
+			<select @onchange="HandleTeamSelection" class="form-control">
+				<option value="" disabled>Select a team</option>
+				@if (Matchup != null)
+				{
+					<option value="@Matchup.TeamA.Name">@Matchup.TeamA.Name</option>
+					<option value="@Matchup.TeamB.Name">@Matchup.TeamB.Name</option>
+				}
+			</select>
+		</div>
 
-    <div class="form-group mb-3">
-        <label>Minute:</label>
-        <input type="number" @bind="eventMinute" class="form-control" />
-    </div>
+		@if (!string.IsNullOrEmpty(selectedTeam) && players.Count > 0)
+		{
+			<div class="mb-3">
+				<label>Player:</label>
+				<select @bind="selectedPlayer" class="form-control">
+					<option value="" disabled>Select a player</option>
+					@foreach (var player in players)
+					{
+						<option value="@player.Name">@player.Name</option>
+					}
+				</select>
+			</div>
+		}
 
-    <div class="form-group text-center">
-        <button class="btn btn-danger text-light" @onclick="SubmitRedCardLog">
-            <img src="images/red-card.png" alt="Red Card" class="img-fluid" style="max-height: 20px;" />
-            Submit
-        </button>
-        <button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
-    </div>
+		<div class="mb-3">
+			<label>Minute:</label>
+			<input type="number" @bind="eventMinute" class="form-control" />
+		</div>
+
+		<div class="text-center">
+			<button class="btn btn-danger text-light" @onclick="SubmitRedCardLog">
+				<img src="images/red-card.png" alt="Red Card" class="img-fluid" style="max-height: 20px;" />
+				Submit
+			</button>
+			<button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+		</div>
+	</div>
 </div>
 
 @code {
-    [Parameter] public Matchup? Matchup { get; set; }
-    [Parameter] public EventCallback OnClose { get; set; }
-    [Parameter] public HubConnection? HubConnection { get; set; }
-    [Parameter] public bool IsConnected { get; set; }
+	[Parameter] public Matchup? Matchup { get; set; }
+	[Parameter] public EventCallback OnClose { get; set; }
+	[Parameter] public HubConnection? HubConnection { get; set; }
+	[Parameter] public bool IsConnected { get; set; }
 
-    private string? selectedTeam;
-    private string? selectedPlayer;
-    private int eventMinute;
-    private List<Player> players = new();
+	private string? selectedTeam;
+	private string? selectedPlayer;
+	private int eventMinute;
+	private List<Player> players = new();
 
-    private void HandleTeamSelection(ChangeEventArgs e)
-    {
-        selectedTeam = e.Value?.ToString();
-        LoadPlayers();
-    }
+	private void HandleTeamSelection(ChangeEventArgs e)
+	{
+		selectedTeam = e.Value?.ToString();
+		LoadPlayers();
+	}
 
-    private void LoadPlayers()
-    {
-        if (selectedTeam == Matchup?.TeamA.Name)
-            players = Matchup.TeamA.Squad.Where(p => p.IsPlaying && !p.IsDisqualified).ToList();
-        else if (selectedTeam == Matchup?.TeamB.Name)
-            players = Matchup.TeamB.Squad.Where(p => p.IsPlaying && !p.IsDisqualified).ToList();
-        else
-            players = new List<Player>();
-    }
+	private void LoadPlayers()
+	{
+		if (selectedTeam == Matchup?.TeamA.Name)
+			players = Matchup.TeamA.Squad.Where(p => p.IsPlaying && !p.IsDisqualified).ToList();
+		else if (selectedTeam == Matchup?.TeamB.Name)
+			players = Matchup.TeamB.Squad.Where(p => p.IsPlaying && !p.IsDisqualified).ToList();
+		else
+			players = new List<Player>();
+	}
 
-    private async Task SubmitRedCardLog()
-    {
-        if (string.IsNullOrEmpty(selectedTeam) || string.IsNullOrEmpty(selectedPlayer))
-            return;
+	private async Task SubmitRedCardLog()
+	{
+		if (string.IsNullOrEmpty(selectedTeam) || string.IsNullOrEmpty(selectedPlayer))
+			return;
 
-        Matchup?.LogRedCard(selectedTeam, selectedPlayer, eventMinute);
+		Matchup?.LogRedCard(selectedTeam, selectedPlayer, eventMinute);
 
-        if (HubConnection is not null && IsConnected)
-        {
-            var log = new ReportEventLog
-                {
-                    Minute = eventMinute,
-                    Type = "Red Card",
-                    Team = selectedTeam,
-                    Player = selectedPlayer,
-                    Description = $"{selectedPlayer} received a red card and is disqualified.",
-                    Details = $"Red card issued to {selectedPlayer} at minute {eventMinute}. The player must leave the field.",
-                };
-            await HubConnection.SendAsync("SendEventLog", log);
-        }
+		if (HubConnection is not null && IsConnected)
+		{
+			var log = new ReportEventLog
+				{
+					Minute = eventMinute,
+					Type = "Red Card",
+					Team = selectedTeam,
+					Player = selectedPlayer,
+					Description = $"{selectedPlayer} received a red card and is disqualified.",
+					Details = $"Red card issued to {selectedPlayer} at minute {eventMinute}. The player must leave the field.",
+				};
+			await HubConnection.SendAsync("SendEventLog", log);
+		}
 
-        LoadPlayers();
-        await OnClose.InvokeAsync();
-    }
+		LoadPlayers();
+		await OnClose.InvokeAsync();
+	}
 }

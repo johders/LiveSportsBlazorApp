@@ -6,48 +6,70 @@
 
 <PageTitle>Report</PageTitle>
 
-<ActionButton ButtonText="Get Today's Matchup"
+<ActionButton ButtonText="Get Next Game"
 			  ButtonClass="btn-success"
 			  OnClick="GenerateMatchup"
-			  IsDisabled="@(matchup != null)"/>
+			  IsDisabled="@(matchup != null)" />
 
 @if (matchup != null)
 {
-    <MatchupDisplay Matchup="matchup" />
-}
+	<ActionButton ButtonText="Start Game"
+				  ButtonClass="btn-primary"
+				  OnClick="StartGame"
+				  IsDisabled="@isGameRunning" />
 
-<ReporterDashboard OnLogTypeSelected="HandleLogTypeSelected" />
+	<ActionButton ButtonText="Stop Game"
+				  ButtonClass="btn-danger"
+				  OnClick="ShowStopGameModal" />
 
-@if (selectedLogType == "Manual")
-{
-	<ManualLogForm HubConnection="hubConnection"
-				   IsConnected="IsConnected"
-				   OnClose="CloseLogForm" />
-}
-else if (selectedLogType == "YellowCard")
-{
-	<YellowCardLogForm Matchup="matchup"
-					   HubConnection="hubConnection"
+	<MatchupDisplay Matchup="matchup"/>
+
+	<ReporterDashboard OnLogTypeSelected="HandleLogTypeSelected" />
+
+	@if (selectedLogType == "Manual")
+	{
+		<ManualLogForm HubConnection="hubConnection"
 					   IsConnected="IsConnected"
 					   OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "YellowCard")
+	{
+		<YellowCardLogForm Matchup="matchup"
+						   HubConnection="hubConnection"
+						   IsConnected="IsConnected"
+						   OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "RedCard")
+	{
+		<RedCardLogForm Matchup="matchup"
+						HubConnection="hubConnection"
+						IsConnected="IsConnected"
+						OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "AnotherLog")
+	{
+		<!-- Future log components can go here -->
+	}
 }
-else if (selectedLogType == "RedCard")
-{
-	<RedCardLogForm Matchup="matchup"
-					HubConnection="hubConnection"
-					IsConnected="IsConnected"
-					OnClose="CloseLogForm" />
-}
-else if (selectedLogType == "AnotherLog")
-{
-	<!-- Future log components can go here -->
-}
+
+<ConfirmationModal @ref="stopGameModal"
+				   Title="Confirm Stop Game"
+				   Message="Are you sure you want to stop the game?"
+				   ConfirmButtonText="Stop Game"
+				   CancelButtonText="Cancel"
+				   OnConfirm="StopGame"
+				   OnCancel="CloseStopGameModal" />
+
 
 @code {
 	private HubConnection? hubConnection;
 
 	private Matchup? matchup;
 	private string? selectedLogType;
+	private ConfirmationModal? stopGameModal;
+
+	private bool isGameRunning = false;
+	private CancellationTokenSource? gameTimerCts;
 
 	private async Task GenerateMatchup()
 	{
@@ -56,12 +78,63 @@ else if (selectedLogType == "AnotherLog")
 		if (matchupResult.Success)
 		{
 			matchup = matchupResult.Data;
+			matchup.CurrentMinute = 0;
+			isGameRunning = false;
 
 			if (hubConnection is not null && IsConnected)
 			{
 				await hubConnection.SendAsync("SendMatchup", matchup);
 			}
 		}
+	}
+
+	private async Task StartGame()
+	{
+		if (isGameRunning || matchup == null) return;
+
+		isGameRunning = true;
+		gameTimerCts = new CancellationTokenSource();
+
+
+		while (!gameTimerCts.Token.IsCancellationRequested && matchup.CurrentMinute < 90)
+		{
+			await Task.Delay(5333, gameTimerCts.Token);
+			matchup.CurrentMinute++;
+
+			if (hubConnection is not null && IsConnected)
+			{
+				await hubConnection.SendAsync("BroadcastMinute", matchup.CurrentMinute);
+			}
+
+			StateHasChanged();
+
+			if (matchup.CurrentMinute == 45)
+			{
+				// Half-time logic can be added here, e.g., pause or notify
+			}
+		}
+	}
+
+	private void ShowStopGameModal()
+	{
+		stopGameModal?.Show();
+	}
+
+	private void CloseStopGameModal()
+	{
+		stopGameModal?.Hide();
+	}
+
+	private void StopGame()
+	{
+		gameTimerCts?.Cancel();
+		isGameRunning = false;
+		if (matchup != null)
+		{
+			matchup.CurrentMinute = 0;
+		}
+		matchup = null;
+		CloseStopGameModal();
 	}
 
 	private void HandleLogTypeSelected(string logType)

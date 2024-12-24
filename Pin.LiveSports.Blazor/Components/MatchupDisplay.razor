@@ -9,7 +9,10 @@
     </div>
 
     <div class="col-2 d-flex align-items-center justify-content-center my-4">
-        <p class="h1 fw-bold">@Matchup.TeamAScore - @Matchup.TeamBScore</p>
+        <div class="d-flex flex-column align-items-center">
+            <h5 class="@currentMinuteClass mb-2 fw-bold h4">@Matchup.CurrentMinute'</h5>
+            <p class="h1 fw-bold mb-0">@Matchup.TeamAScore - @Matchup.TeamBScore</p>
+        </div>
     </div>
 
     <div class="col-5 p-3 my-4">
@@ -61,4 +64,24 @@
 @code {
     [Parameter]
     public Matchup Matchup { get; set; }
+
+    private string currentMinuteClass = "";
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(currentMinuteClass))
+        {
+            return;
+        }
+
+        currentMinuteClass = "blink";
+        _ = ResetBlinkClassAsync();
+    }
+
+    private async Task ResetBlinkClassAsync()
+    {
+        await Task.Delay(500);
+        currentMinuteClass = "";
+        StateHasChanged();
+    }
 }
