@@ -11,17 +11,6 @@ namespace Pin.LiveSports.Core.Models
         public int CurrentMinute { get; set; }
         public List<ReportEventLog> EventLogs { get; set; } = new List<ReportEventLog>();
 
-        public void LogManualEvent(int minute, string description, string details)
-        {
-            EventLogs.Add(new ReportEventLog
-            {
-                Minute = minute,
-                Type = "Manual",
-                Description = description,
-                Details = details,
-            });
-        }
-
         public void LogYellowCard(string teamName, string playerName, int minute)
         {
             var team = GetTeamByName(teamName);

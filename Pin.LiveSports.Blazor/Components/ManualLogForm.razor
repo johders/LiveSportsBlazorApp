@@ -25,10 +25,8 @@
 	</div>
 </div>
 @code {
-	[Parameter] public Matchup? Matchup { get; set; }
+	[Parameter] public EventCallback<ReportEventLog> SubmitLogCallback { get; set; }
 	[Parameter] public EventCallback OnClose { get; set; }
-	[Parameter] public HubConnection? HubConnection { get; set; }
-	[Parameter] public bool IsConnected { get; set; }
 
 	private int eventMinute;
 	private string eventDescription = string.Empty;
@@ -44,12 +42,7 @@
 				Details = eventDetails,
 			};
 
-		Matchup?.LogManualEvent(eventMinute, eventDescription, eventDetails);
-
-		if (HubConnection is not null && IsConnected)
-		{
-			await HubConnection.SendAsync("SendEventLog", log);
-		}
+		await SubmitLogCallback.InvokeAsync(log);
 
 		await OnClose.InvokeAsync();
 	}

@@ -30,10 +30,7 @@
 
 	@if (selectedLogType == "Manual")
 	{
-		<ManualLogForm Matchup="matchup"
-					   HubConnection="hubConnection"
-					   IsConnected="IsConnected"
-					   OnClose="CloseLogForm" />
+		<ManualLogForm SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "YellowCard")
 	{
@@ -102,6 +99,14 @@
 			{
 				await hubConnection.SendAsync("SendMatchup", matchup);
 			}
+		}
+	}
+
+	private async Task SubmitLog(ReportEventLog log)
+	{
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendEventLog", log);
 		}
 	}
 
