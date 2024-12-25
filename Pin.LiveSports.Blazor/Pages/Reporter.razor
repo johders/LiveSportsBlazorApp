@@ -34,18 +34,16 @@
 	}
 	else if (selectedLogType == "YellowCard")
 	{
-		@* <YellowCardLogForm Matchup="matchup"
-						   HubConnection="hubConnection"
-						   IsConnected="IsConnected"
-						   OnClose="CloseLogForm" /> *@
 		<YellowCardLogForm Matchup="matchup" SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "RedCard")
 	{
-		<RedCardLogForm Matchup="matchup"
+@* 		<RedCardLogForm Matchup="matchup"
 						HubConnection="hubConnection"
 						IsConnected="IsConnected"
-						OnClose="CloseLogForm" />
+						OnClose="CloseLogForm" /> *@
+
+		<RedCardLogForm Matchup="matchup" SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "Substitution")
 	{

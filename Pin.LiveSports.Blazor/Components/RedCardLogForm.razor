@@ -48,9 +48,8 @@
 
 @code {
 	[Parameter] public Matchup? Matchup { get; set; }
+	[Parameter] public EventCallback<ReportEventLog> SubmitLogCallback { get; set; }
 	[Parameter] public EventCallback OnClose { get; set; }
-	[Parameter] public HubConnection? HubConnection { get; set; }
-	[Parameter] public bool IsConnected { get; set; }
 
 	private string? selectedTeam;
 	private string? selectedPlayer;
@@ -78,21 +77,17 @@
 		if (string.IsNullOrEmpty(selectedTeam) || string.IsNullOrEmpty(selectedPlayer))
 			return;
 
-		Matchup?.LogRedCard(selectedTeam, selectedPlayer, eventMinute);
+		var log = new ReportEventLog
+			{
+				Minute = eventMinute,
+				Type = "Red Card",
+				Team = selectedTeam,
+				Player = selectedPlayer,
+				Description = $"{selectedPlayer} received a red card and is disqualified.",
+				Details = $"Red card issued to {selectedPlayer} at minute {eventMinute}. The player must leave the field.",
+			};
 
-		if (HubConnection is not null && IsConnected)
-		{
-			var log = new ReportEventLog
-				{
-					Minute = eventMinute,
-					Type = "Red Card",
-					Team = selectedTeam,
-					Player = selectedPlayer,
-					Description = $"{selectedPlayer} received a red card and is disqualified.",
-					Details = $"Red card issued to {selectedPlayer} at minute {eventMinute}. The player must leave the field.",
-				};
-			await HubConnection.SendAsync("SendEventLog", log);
-		}
+		await SubmitLogCallback.InvokeAsync(log);
 
 		LoadPlayers();
 		await OnClose.InvokeAsync();
