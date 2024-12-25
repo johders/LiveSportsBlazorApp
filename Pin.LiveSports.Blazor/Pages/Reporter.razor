@@ -7,20 +7,20 @@
 <PageTitle>Report</PageTitle>
 
 <ActionButton ButtonText="Get Next Game"
-			  ButtonClass="btn-success"
-			  OnClick="GenerateMatchup"
-			  IsDisabled="@(matchup != null)" />
+ButtonClass="btn-success"
+OnClick="GenerateMatchup"
+IsDisabled="@(matchup != null)" />
 
 @if (matchup != null)
 {
 	<ActionButton ButtonText="Start Game"
-				  ButtonClass="btn-primary"
-				  OnClick="StartGame"
-				  IsDisabled="@isGameRunning" />
+	ButtonClass="btn-primary"
+	OnClick="StartGame"
+	IsDisabled="@isGameRunning" />
 
 	<ActionButton ButtonText="Stop Game"
-				  ButtonClass="btn-danger"
-				  OnClick="ShowStopGameModal" />
+	ButtonClass="btn-danger"
+	OnClick="ShowStopGameModal" />
 
 	<MatchupDisplay Matchup="matchup"/>
 }
@@ -42,21 +42,21 @@
 	}
 	else if (selectedLogType == "Substitution")
 	{
-		<SubstitutionLogForm Matchup="matchup" SubmitLogCallback="SubmitManualLog" OnClose="CloseLogForm" />
+		<SubstitutionLogForm Matchup="matchup" SubmitLogCallback="SubmitSubstitutionLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "Goal")
 	{
-		<GoalLogForm Matchup="matchup" SubmitLogCallback="SubmitManualLog" OnClose="CloseLogForm" />
+		<GoalLogForm Matchup="matchup" SubmitLogCallback="SubmitGoalLog" OnClose="CloseLogForm" />
 	}
 }
 
 <ConfirmationModal @ref="stopGameModal"
-				   Title="Confirm Stop Game"
-				   Message="Are you sure you want to stop the game?"
-				   ConfirmButtonText="Stop Game"
-				   CancelButtonText="Cancel"
-				   OnConfirm="StopGame"
-				   OnCancel="CloseStopGameModal" />
+Title="Confirm Stop Game"
+Message="Are you sure you want to stop the game?"
+ConfirmButtonText="Stop Game"
+CancelButtonText="Cancel"
+OnConfirm="StopGame"
+OnCancel="CloseStopGameModal" />
 
 
 @code {
@@ -91,6 +91,7 @@
 		if (hubConnection is not null && IsConnected)
 		{
 			await hubConnection.SendAsync("SendEventLog", log);
+			RefreshGame();
 		}
 	}
 
@@ -99,6 +100,7 @@
 		if (hubConnection is not null && IsConnected)
 		{
 			await hubConnection.SendAsync("SendYellowCardLog", log);
+			RefreshGame();
 		}
 	}
 
@@ -107,7 +109,31 @@
 		if (hubConnection is not null && IsConnected)
 		{
 			await hubConnection.SendAsync("SendRedCardLog", log);
+			RefreshGame();
 		}
+	}
+
+	private async Task SubmitSubstitutionLog(ReportEventLog log)
+	{
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendSubstitutionLog", log);
+			RefreshGame();
+		}
+	}
+
+	private async Task SubmitGoalLog(ReportEventLog log)
+	{
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendGoalLog", log);
+			RefreshGame();
+		}
+	}
+
+	private void RefreshGame()
+	{
+		matchup = ReportService.GetMatchup();
 	}
 
 	private async Task StartGame()
@@ -171,6 +197,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+
 		hubConnection = new HubConnectionBuilder()
 			.WithUrl(Navigation.ToAbsoluteUri(AppConstants.HubUrl))
 			.Build();

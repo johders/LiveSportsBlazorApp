@@ -7,7 +7,6 @@ namespace Pin.LiveSports.Core.Services
     public class ReportService : IReportService
     {
         private Matchup _matchup = new();
-
         public List<ReportEventLog> GetEventLogs()
         {
             return _matchup.EventLogs;
@@ -59,6 +58,46 @@ namespace Pin.LiveSports.Core.Services
                 Player = playerName,
                 Description = $"{playerName} received a red card and is disqualified.",
                 Details = $"Red card issued to {playerName} at minute {minute}.",
+            };
+        }
+
+        public void LogSubstitution(string teamName, string playerIn, string playerOut, int minute)
+        {
+            var team = GetTeamByName(teamName);
+            if (team == null) return;
+
+            team.PerformSubstitution(playerIn, playerOut);
+
+            var log = new ReportEventLog
+            {
+                Minute = minute,
+                Type = "Substitution",
+                Team = teamName,
+                PlayerIn = playerIn,
+                PlayerOut = playerOut,
+                Description = $"Substitution: {playerIn} replaced {playerOut}.",
+                Details = $"{playerIn} subbed in for {playerOut} at minute {minute}.",
+            };
+        }
+
+        public void LogGoal(string teamName, string playerName, int minute)
+        {
+            var team = GetTeamByName(teamName);
+            if (team == null) return;
+
+            if (teamName == _matchup.TeamA.Name)
+                _matchup.TeamAScore++;
+            else if (teamName == _matchup.TeamB.Name)
+                _matchup.TeamBScore++;
+
+            var log = new ReportEventLog
+            {
+                Minute = minute,
+                Type = "Goal",
+                Team = teamName,
+                Player = playerName,
+                Description = $"{playerName} scored a goal!",
+                Details = $"Goal by {playerName} at minute {minute}.",
             };
         }
 

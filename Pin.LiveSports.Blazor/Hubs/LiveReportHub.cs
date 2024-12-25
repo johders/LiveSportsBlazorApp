@@ -43,6 +43,20 @@ namespace Pin.LiveSports.Blazor.Hubs
             await Clients.Others.SendAsync("ReceiveEventLog", eventLog);
         }
 
+        public async Task SendSubstitutionLog(ReportEventLog eventLog)
+        {
+            _reportService.LogSubstitution(eventLog.Team, eventLog.PlayerIn, eventLog.PlayerOut, eventLog.Minute);
+            _reportService.InsertEventLog(eventLog);
+            await Clients.Others.SendAsync("ReceiveEventLog", eventLog);
+        }
+
+        public async Task SendGoalLog(ReportEventLog eventLog)
+        {
+            _reportService.LogGoal(eventLog.Team, eventLog.Player, eventLog.Minute);
+            _reportService.InsertEventLog(eventLog);
+            await Clients.Others.SendAsync("ReceiveEventLog", eventLog);
+        }
+
         public async Task SendScoreUpdate(string teamName, int teamAScore, int teamBScore)
         {
             await Clients.Others.SendAsync("ReceiveScoreUpdate", teamName, teamAScore, teamBScore);

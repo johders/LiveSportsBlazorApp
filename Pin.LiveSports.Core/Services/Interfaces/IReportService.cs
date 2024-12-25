@@ -10,5 +10,7 @@ namespace Pin.LiveSports.Core.Services.Interfaces
         void InsertEventLog(ReportEventLog eventLog);
         void LogYellowCard(string teamName, string playerName, int minute);
         void LogRedCard(string teamName, string playerName, int minute);
+        void LogSubstitution(string teamName, string playerIn, string playerOut, int minute);
+        void LogGoal(string teamName, string playerName, int minute);
     }
 }
