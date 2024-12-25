@@ -7,6 +7,7 @@ namespace Pin.LiveSports.Core.Services
     public class ReportService : IReportService
     {
         private Matchup _matchup = new();
+
         public List<ReportEventLog> GetEventLogs()
         {
             return _matchup.EventLogs;

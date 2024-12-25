@@ -97,17 +97,6 @@
 			}
 		});
 
-		hubConnection.On<string, int, int>("ReceiveScoreUpdate", (teamName, teamAScore, teamBScore) =>
-		{
-			if (liveMatchup is not null)
-			{
-				liveMatchup.TeamAScore = teamAScore;
-				liveMatchup.TeamBScore = teamBScore;
-			}
-
-			InvokeAsync(StateHasChanged);
-		});
-
 		await hubConnection.StartAsync();
 	}
 

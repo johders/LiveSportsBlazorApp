@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Pin.LiveSports.Core.Models;
 using Pin.LiveSports.Core.Services.Interfaces;
-using System.Linq.Expressions;
 
 namespace Pin.LiveSports.Blazor.Hubs
 {
@@ -56,12 +55,5 @@ namespace Pin.LiveSports.Blazor.Hubs
             _reportService.InsertEventLog(eventLog);
             await Clients.Others.SendAsync("ReceiveEventLog", eventLog);
         }
-
-        public async Task SendScoreUpdate(string teamName, int teamAScore, int teamBScore)
-        {
-            await Clients.Others.SendAsync("ReceiveScoreUpdate", teamName, teamAScore, teamBScore);
-        }
-
-
     }
 }

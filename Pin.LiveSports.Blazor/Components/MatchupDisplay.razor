@@ -46,6 +46,7 @@
                                 <th>Name</th>
                                 <th>Position</th>
                                 <th>Status</th>
+                                <th>Cards</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -59,11 +60,16 @@
                                         {
                                             <span class="badge bg-success">Playing</span>
                                         }
+                                        else if (player.IsDisqualified)
+                                        {
+                                            <span class="badge bg-danger">Disqualified</span>
+                                        }
                                         else
                                         {
                                             <span class="badge bg-secondary">Benched</span>
                                         }
                                     </td>
+                                    <td>Red: @player.RedCardCount | Yellow: @player.YellowCardCount</td>
                                 </tr>
                             }
                         </tbody>

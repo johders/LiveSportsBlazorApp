@@ -18,6 +18,7 @@
             if (player.YellowCardCount == 2 && !player.IsDisqualified)
             {
                 player.IsDisqualified = true;
+                player.IsPlaying = false;
             }
         }
 
@@ -28,6 +29,7 @@
 
             player.RedCardCount++;
             player.IsDisqualified = true;
+            player.IsPlaying = false;
         }
 
         public void PerformSubstitution(string playerIn, string playerOut)
