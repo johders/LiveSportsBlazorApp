@@ -7,6 +7,11 @@
 	<div class="card-body">
 
 		<div class="mb-3">
+			<label>Minute:</label>
+			<input type="number" @bind="eventMinute" class="form-control" />
+		</div>
+
+		<div class="mb-3">
 			<label>Team:</label>
 			<select @onchange="HandleTeamSelection" class="form-control">
 				<option value="" disabled>Select a team</option>
@@ -33,11 +38,6 @@
 			</div>
 		}
 
-		<div class="mb-3">
-			<label>Minute:</label>
-			<input type="number" @bind="eventMinute" class="form-control" />
-		</div>
-
 		<div class="text-center">
 			<button class="btn btn-warning text-dark" @onclick="SubmitYellowCardLog">
 				<img src="images/yellow-card.png" alt="Yellow Card" class="img-fluid" style="max-height: 20px;" />
@@ -50,9 +50,8 @@
 
 @code {
 	[Parameter] public Matchup? Matchup { get; set; }
+	[Parameter] public EventCallback<ReportEventLog> SubmitLogCallback { get; set; }
 	[Parameter] public EventCallback OnClose { get; set; }
-	[Parameter] public HubConnection? HubConnection { get; set; }
-	[Parameter] public bool IsConnected { get; set; }
 
 	private string? selectedTeam;
 	private string? selectedPlayer;
@@ -80,21 +79,16 @@
 		if (string.IsNullOrEmpty(selectedTeam) || string.IsNullOrEmpty(selectedPlayer))
 			return;
 
-		Matchup?.LogYellowCard(selectedTeam, selectedPlayer, eventMinute);
-
-		if (HubConnection is not null && IsConnected)
-		{
-			var log = new ReportEventLog
-				{
-					Minute = eventMinute,
-					Type = "Yellow Card",
-					Team = selectedTeam,
-					Player = selectedPlayer,
-					Description = $"{selectedPlayer} received a yellow card.",
-					Details = $"Yellow card issued to {selectedPlayer} at minute {eventMinute}.",
-				};
-			await HubConnection.SendAsync("SendEventLog", log);
-		}
+		var log = new ReportEventLog
+			{
+				Minute = eventMinute,
+				Type = "Yellow Card",
+				Team = selectedTeam,
+				Player = selectedPlayer,
+				Description = $"{selectedPlayer} received a yellow card.",
+				Details = $"Yellow card issued to {selectedPlayer} at minute {eventMinute}.",
+			};
+		await SubmitLogCallback.InvokeAsync(log);
 
 		LoadPlayers();
 		await OnClose.InvokeAsync();

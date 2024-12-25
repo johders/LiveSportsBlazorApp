@@ -18,12 +18,6 @@ namespace Pin.LiveSports.Blazor.Hubs
             _reportService.SetMatchup(matchup);
             await Clients.Others.SendAsync("ReceiveMatchup", matchup);
         }
-
-        public async Task SendScoreUpdate(string teamName, int teamAScore, int teamBScore)
-        {
-            await Clients.Others.SendAsync("ReceiveScoreUpdate", teamName, teamAScore, teamBScore);
-        }
-
         public async Task SendEventLog(ReportEventLog eventLog)
         {
             _reportService.SetEventLog(eventLog);
@@ -33,6 +27,11 @@ namespace Pin.LiveSports.Blazor.Hubs
         public async Task BroadcastMinute(int currentMinute)
         {
             await Clients.Others.SendAsync("UpdateMinute", currentMinute);
+        }
+
+        public async Task SendScoreUpdate(string teamName, int teamAScore, int teamBScore)
+        {
+            await Clients.Others.SendAsync("ReceiveScoreUpdate", teamName, teamAScore, teamBScore);
         }
     }
 }
