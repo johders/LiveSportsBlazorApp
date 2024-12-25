@@ -7,6 +7,8 @@ namespace Pin.LiveSports.Core.Services.Interfaces
         Matchup GetMatchup();
         List<ReportEventLog> GetEventLogs();
         void SetMatchup(Matchup matchup);
-        void SetEventLog(ReportEventLog eventLog);
+        void InsertEventLog(ReportEventLog eventLog);
+        void LogYellowCard(string teamName, string playerName, int minute);
+        void LogRedCard(string teamName, string playerName, int minute);
     }
 }

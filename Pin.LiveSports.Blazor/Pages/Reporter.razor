@@ -30,23 +30,23 @@
 
 	@if (selectedLogType == "Manual")
 	{
-		<ManualLogForm SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
+		<ManualLogForm SubmitLogCallback="SubmitManualLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "YellowCard")
 	{
-		<YellowCardLogForm Matchup="matchup" SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
+		<YellowCardLogForm Matchup="matchup" SubmitLogCallback="SubmitYellowCardLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "RedCard")
 	{
-		<RedCardLogForm Matchup="matchup" SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
+		<RedCardLogForm Matchup="matchup" SubmitLogCallback="SubmitRedCardLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "Substitution")
 	{
-		<SubstitutionLogForm Matchup="matchup" SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
+		<SubstitutionLogForm Matchup="matchup" SubmitLogCallback="SubmitManualLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "Goal")
 	{
-		<GoalLogForm Matchup="matchup" SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
+		<GoalLogForm Matchup="matchup" SubmitLogCallback="SubmitManualLog" OnClose="CloseLogForm" />
 	}
 }
 
@@ -86,24 +86,29 @@
 		}
 	}
 
-	private async Task SubmitLog(ReportEventLog log)
+	private async Task SubmitManualLog(ReportEventLog log)
 	{
 		if (hubConnection is not null && IsConnected)
 		{
-			if (log.Type == "Goal") 
-			{
-				//await hubConnection.SendAsync("SendScoreUpdate", selectedTeam, Matchup.TeamAScore, Matchup.TeamBScore).
-			}
 			await hubConnection.SendAsync("SendEventLog", log);
 		}
 	}
 
-	// private Team? GetTeamByName(string teamName)
-	// {
-	// 	if (matchup.TeamA.Name == teamName) return matchup.TeamA;
-	// 	if (matchup.TeamB.Name == teamName) return matchup.TeamB;
-	// 	return null;
-	// }
+	private async Task SubmitYellowCardLog(ReportEventLog log)
+	{
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendYellowCardLog", log);
+		}
+	}
+
+	private async Task SubmitRedCardLog(ReportEventLog log)
+	{
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendRedCardLog", log);
+		}
+	}
 
 	private async Task StartGame()
 	{
