@@ -44,9 +44,8 @@
 @code {
     @code {
         [Parameter] public Matchup? Matchup { get; set; }
+        [Parameter] public EventCallback<ReportEventLog> SubmitLogCallback { get; set; }
         [Parameter] public EventCallback OnClose { get; set; }
-        [Parameter] public HubConnection? HubConnection { get; set; }
-        [Parameter] public bool IsConnected { get; set; }
 
         private string? selectedTeam;
         private string? selectedPlayer;
@@ -71,12 +70,9 @@
 
         private async Task SubmitGoalLog()
         {
-            if (string.IsNullOrEmpty(selectedTeam) || string.IsNullOrEmpty(selectedPlayer)) return;
+            if (string.IsNullOrEmpty(selectedTeam) || string.IsNullOrEmpty(selectedPlayer)) 
+            return;
 
-            Matchup?.LogGoal(selectedTeam, selectedPlayer, eventMinute);
-
-            if (HubConnection is not null && IsConnected)
-            {
                 var log = new ReportEventLog
                 {
                     Minute = eventMinute,
@@ -86,9 +82,8 @@
                     Description = $"{selectedPlayer} scored a goal!",
                     Details = $"Goal scored by {selectedPlayer} at minute {eventMinute}.",
                 };
-                await HubConnection.SendAsync("SendEventLog", log);
-                await HubConnection.SendAsync("SendScoreUpdate", selectedTeam, Matchup.TeamAScore, Matchup.TeamBScore);
-            }
+
+            await SubmitLogCallback.InvokeAsync(log);
 
             await OnClose.InvokeAsync();
         }

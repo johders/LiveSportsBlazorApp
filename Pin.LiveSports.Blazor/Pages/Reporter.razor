@@ -38,30 +38,15 @@
 	}
 	else if (selectedLogType == "RedCard")
 	{
-@* 		<RedCardLogForm Matchup="matchup"
-						HubConnection="hubConnection"
-						IsConnected="IsConnected"
-						OnClose="CloseLogForm" /> *@
-
 		<RedCardLogForm Matchup="matchup" SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "Substitution")
 	{
-		<SubstitutionLogForm Matchup="matchup"
-						HubConnection="hubConnection"
-						IsConnected="IsConnected"
-						OnClose="CloseLogForm" />
+		<SubstitutionLogForm Matchup="matchup" SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "Goal")
 	{
-		<GoalLogForm Matchup="matchup"
-					 HubConnection="hubConnection"
-					 IsConnected="IsConnected"
-					 OnClose="CloseLogForm" />
-	}
-	else if (selectedLogType == "AnotherLog")
-	{
-		<!-- Future log components can go here -->
+		<GoalLogForm Matchup="matchup" SubmitLogCallback="SubmitLog" OnClose="CloseLogForm" />
 	}
 }
 
@@ -105,9 +90,20 @@
 	{
 		if (hubConnection is not null && IsConnected)
 		{
+			if (log.Type == "Goal") 
+			{
+				//await hubConnection.SendAsync("SendScoreUpdate", selectedTeam, Matchup.TeamAScore, Matchup.TeamBScore).
+			}
 			await hubConnection.SendAsync("SendEventLog", log);
 		}
 	}
+
+	// private Team? GetTeamByName(string teamName)
+	// {
+	// 	if (matchup.TeamA.Name == teamName) return matchup.TeamA;
+	// 	if (matchup.TeamB.Name == teamName) return matchup.TeamB;
+	// 	return null;
+	// }
 
 	private async Task StartGame()
 	{
