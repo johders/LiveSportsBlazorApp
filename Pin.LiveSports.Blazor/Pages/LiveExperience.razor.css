@@ -15,10 +15,14 @@
     color: #83ff00;
 }
 
+.spinner-custom {
+    color: #83ff00;
+}
+
 .vertical-line {
     position: relative;
     width: 2px;
-    background-color: black;
+    background-color: lightgrey;
     min-height: 100%;
 }
 
@@ -29,7 +33,7 @@
         left: 50%;
         min-height: 100%;
         width: 2px;
-        background-color: black;
+        background-color: lightgrey;
     }
 
 .row {
@@ -54,7 +58,7 @@
     border-radius: 5px;
 }
 
-.player-carded {
+.player-highlight {
     border-bottom: 3px solid #83ff00;
 }
 
@@ -64,4 +68,28 @@
 
 .left-border-min {
     border-left: 4px dotted #83ff00;
+}
+
+.substitution-event {
+    position: relative;
+}
+
+.arrow-icon {
+    width: 24px;
+    height: auto;
+}
+
+.vertical-line {
+    width: 2px;
+    color: lightgray;
+    height: 40px;
+    margin: 0.5rem 0;
+}
+
+.bottom-0 {
+    bottom: 0;
+}
+
+.start-0 {
+    left: 0;
 }
