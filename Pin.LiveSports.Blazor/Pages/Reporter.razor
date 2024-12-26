@@ -32,7 +32,7 @@ IsDisabled="@(matchup != null)" />
 
 	@if (selectedLogType == "Manual")
 	{
-		<ManualLogForm SubmitLogCallback="SubmitManualLog" OnClose="CloseLogForm" />
+		<ManualLogForm CurrentMinute="matchup.CurrentMinute" SubmitLogCallback="SubmitManualLog" OnClose="CloseLogForm" />
 	}
 	else if (selectedLogType == "YellowCard")
 	{

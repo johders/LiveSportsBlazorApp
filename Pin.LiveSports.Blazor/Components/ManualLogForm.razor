@@ -1,5 +1,5 @@
 ﻿<div class="card shadow-lg border-0 bg-light my-3 w-75 m-auto">
-	<div class="card-header bg-primary bg-opacity-75 text-white text-center">
+	<div class="card-header bg-secondary bg-opacity-75 text-white text-center">
 		<h5 class="mb-0">Manual Event Log</h5>
 	</div>
 	<div class="card-body">
@@ -27,6 +27,7 @@
 @code {
 	[Parameter] public EventCallback<ReportEventLog> SubmitLogCallback { get; set; }
 	[Parameter] public EventCallback OnClose { get; set; }
+	[Parameter] public int CurrentMinute { get; set; }
 
 	private int eventMinute;
 	private string eventDescription = string.Empty;
@@ -45,5 +46,11 @@
 		await SubmitLogCallback.InvokeAsync(log);
 
 		await OnClose.InvokeAsync();
+	}
+
+	protected override void OnInitialized()
+	{
+		if (CurrentMinute != 0)
+			eventMinute = CurrentMinute;
 	}
 }

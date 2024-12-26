@@ -14,7 +14,15 @@
 
 	<GoalSummary Matchup="liveMatchup" />
 
-	<h5>Fase per fase</h5>
+	<h2 class="left-border fw-bold my-0">&nbsp;Fase per fase</h2>
+	if(liveMatchup.EventLogs.Count > 0 && string.IsNullOrEmpty(endDateTime))
+	{
+		<p class="left-border-min">&nbsp; last update @minutesSinceLastUpdate minutes ago</p>
+	}
+	else if (!string.IsNullOrEmpty(endDateTime))
+	{
+		<p class="left-border-min">&nbsp; game ended on @endDateTime</p>
+	}
 	<div class="container">
 		@foreach (var log in liveMatchup?.EventLogs ?? Enumerable.Empty<ReportEventLog>())
 		{
@@ -23,7 +31,7 @@
 					<div class="time-indicator">
 						<i class="bi bi-clock me-2"></i> @log.Minute'
 					</div>
-					<div class="vertical-line flex-grow-1"></div>
+					<div class="vertical-line"></div>
 				</div>
 
 				<div class="col-7">
@@ -31,7 +39,7 @@
 					{
 						<div class="card-event d-flex align-items-center p-2 bg-light">
 							<img src="images/@(log.Type == "Yellow Card" ? "yellow-card.png" : "red-card.png")"
-								 alt="@log.Type" class="card-icon me-3" />
+							alt="@log.Type" class="card-icon me-3" />
 							<div>
 								<h5 class="mb-0 player-carded">@log.Player</h5>
 								<p class="mb-0 text-muted">@log.Team</p>
@@ -93,6 +101,8 @@ else{
 	private HubConnection? hubConnection;
 	private Matchup? liveMatchup;
 	private Competition? competition;
+	private int minutesSinceLastUpdate = 0;
+	private string endDateTime = string.Empty;
 
 	private async Task GetCompetition()
 	{
@@ -115,6 +125,10 @@ else{
 			if (liveMatchup is not null)
 			{
 				liveMatchup.CurrentMinute = minute;
+				if (liveMatchup.EventLogs.Count > 0)
+				{
+					minutesSinceLastUpdate = minute - liveMatchup.EventLogs.First().Minute;
+				}
 				InvokeAsync(StateHasChanged);
 			}
 		});
@@ -130,12 +144,21 @@ else{
 			if (liveMatchup is not null)
 			{
 				liveMatchup = ReportService.GetMatchup();
+				IsGameOverCheck();
 				InvokeAsync(StateHasChanged);
 			}
 		});
 
 		await hubConnection.StartAsync();
 		await GetCompetition();
+	}
+
+	private void IsGameOverCheck()
+	{
+		if (liveMatchup?.EventLogs.Any(e => e.Type == "Stop") == true)
+		{
+			endDateTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+		}
 	}
 
 	public async ValueTask DisposeAsync()

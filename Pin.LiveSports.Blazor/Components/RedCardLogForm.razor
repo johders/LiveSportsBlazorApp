@@ -93,4 +93,10 @@
 		LoadPlayers();
 		await OnClose.InvokeAsync();
 	}
+
+	protected override void OnInitialized()
+	{
+		if (Matchup != null)
+			eventMinute = Matchup.CurrentMinute;
+	}
 }
