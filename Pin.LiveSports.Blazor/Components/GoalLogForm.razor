@@ -3,6 +3,12 @@
         <h5 class="mb-0">Goal Log</h5>
     </div>
     <div class="card-body">
+
+        <div class="mb-3">
+            <label>Minute:</label>
+            <input type="number" @bind="eventMinute" class="form-control" />
+        </div>
+
         <div class="mb-3">
             <label>Team:</label>
             <select @onchange="HandleTeamSelection" class="form-control">
@@ -14,6 +20,7 @@
                 }
             </select>
         </div>
+
         @if (!string.IsNullOrEmpty(selectedTeam) && players.Count > 0)
         {
             <div class="mb-3">
@@ -27,10 +34,7 @@
                 </select>
             </div>
         }
-        <div class="mb-3">
-            <label>Minute:</label>
-            <input type="number" @bind="eventMinute" class="form-control" />
-        </div>
+
         <div class="text-center">
             <button class="btn btn-success" @onclick="SubmitGoalLog">
                 <img src="images/goal.png" alt="Goal" class="img-fluid" style="max-height: 20px;" />

@@ -3,6 +3,12 @@
 		<h5 class="mb-0">Substitution</h5>
 	</div>
 	<div class="card-body">
+
+		<div class="mb-3">
+			<label>Minute:</label>
+			<input type="number" @bind="eventMinute" class="form-control" />
+		</div>
+
 		<div class="mb-3">
 			<label>Team:</label>
 			<select @onchange="HandleTeamSelection" class="form-control">
@@ -39,11 +45,6 @@
 				</select>
 			</div>
 		}
-
-		<div class="mb-3">
-			<label>Minute:</label>
-			<input type="number" @bind="eventMinute" class="form-control" />
-		</div>
 
 		<div class="text-center">
 			<button class="btn btn-success text-white" @onclick="SubmitSubstitutionLog">
