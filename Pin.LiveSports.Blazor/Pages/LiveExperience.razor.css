@@ -11,8 +11,8 @@
     width: 60px;
 }
 
-.bi-clock{
-    color: greenyellow;
+.bi-clock {
+    color: #83ff00;
 }
 
 .vertical-line {
@@ -40,5 +40,5 @@
 }
 
 .player-carded {
-    border-bottom: 3px solid greenyellow;
+    border-bottom: 3px solid #83ff00;
 }

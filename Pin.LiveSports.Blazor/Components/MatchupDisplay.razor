@@ -5,7 +5,7 @@
              alt="@Matchup.TeamA.Name Crest"
              class="img-fluid mb-2 mx-auto d-block"
              style="max-height: 100px;" />
-        <h4>@Matchup.TeamA.Name</h4>
+        <h4><span class ="team-underline">@Matchup.TeamA.Name</span></h4>
         <button class="btn btn-primary mt-3" @onclick="() => ShowLineup(Matchup.TeamA, Matchup.TeamA.Name)">
             View Lineup
         </button>
@@ -23,7 +23,7 @@
              alt="@Matchup.TeamB.Name Crest"
              class="img-fluid mb-2 mx-auto d-block"
              style="max-height: 100px;" />
-        <h4>@Matchup.TeamB.Name</h4>
+        <h4><span class="team-underline">@Matchup.TeamB.Name</span></h4>
         <button class="btn btn-primary mt-3" @onclick="() => ShowLineup(Matchup.TeamB, Matchup.TeamB.Name)">
             View Lineup
         </button>

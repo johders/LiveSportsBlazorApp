@@ -1,6 +1,10 @@
 ﻿.blink {
     animation: blink-animation 0.5s ease-in-out;
-    color: greenyellow;
+    color: #83ff00;
+}
+
+.team-underline {
+    border-bottom: 3px solid #83ff00;
 }
 
 @keyframes blink-animation {

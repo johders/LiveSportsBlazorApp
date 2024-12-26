@@ -12,6 +12,8 @@
 {
 	<MatchupDisplay Matchup="liveMatchup" />
 
+	<GoalSummary Matchup="liveMatchup" />
+
 	<h5>Fase per fase</h5>
 	<div class="container">
 		@foreach (var log in liveMatchup?.EventLogs ?? Enumerable.Empty<ReportEventLog>())
@@ -57,15 +59,50 @@
 							<p class="mb-0 text-muted">@log.Details</p>
 						</div>
 					}
+
+					else if (log.Type == "Stop")
+					{
+						<div class="substitution-event p-3">
+							<h5>@log.Description</h5>
+							<p class="mb-0 text-muted">@log.Details</p>
+						</div>
+					}
 				</div>
 			</div>
 		}
+	</div>
+}
+else{
+	<div class="d-flex vh-100 flex-column justify-content-center align-items-center text-center">
+		@if (competition?.Emblem != null)
+		{
+			<div class="mb-4">
+				<img src="@competition.Emblem" alt="Competition Emblem" class="img-fluid" style="max-height: 200px;">
+			</div>
+		}
+
+		<div class="spinner-border text-primary mb-3" role="status" style="width: 4rem; height: 4rem;">
+			<span class="visually-hidden">Loading...</span>
+		</div>
+		<h3 class="text-muted">Waiting for the next game...</h3>
+		<p class="text-muted">Stay tuned! The action will begin shortly.</p>
 	</div>
 }
 
 @code {
 	private HubConnection? hubConnection;
 	private Matchup? liveMatchup;
+	private Competition? competition;
+
+	private async Task GetCompetition()
+	{
+		var competitionResult = await CompetitionService.GetCompetitionAsync();
+
+		if (competitionResult.Success)
+		{
+			competition = competitionResult.Data;
+		}
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -98,6 +135,7 @@
 		});
 
 		await hubConnection.StartAsync();
+		await GetCompetition();
 	}
 
 	public async ValueTask DisposeAsync()
