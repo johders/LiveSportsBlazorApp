@@ -6,8 +6,6 @@
         public string Crest { get; set; }
         public List<Player> Squad { get; set; }
 
-        private Dictionary<string, int> yellowCardCounts = new Dictionary<string, int>();
-
         public void IssueYellowCard(string playerName)
         {
             var player = Squad.FirstOrDefault(p => p.Name == playerName);
