@@ -6,11 +6,6 @@
 
 <PageTitle>Report</PageTitle>
 
-<ActionButton ButtonText="Get Next Game"
-ButtonClass="btn-success"
-OnClick="GenerateMatchup"
-IsDisabled="@(matchup != null)" />
-
 @if (matchup != null)
 {
 	<ActionButton ButtonText="Start Game"
@@ -25,6 +20,21 @@ IsDisabled="@(matchup != null)" />
 	<MatchupDisplay Matchup="matchup"/>
 	<GoalSummary Matchup="matchup" />
 
+}
+else{
+	<div class="d-flex vh-100 flex-column justify-content-center align-items-center text-center">
+		@if (competition?.Emblem != null)
+		{
+			<div class="mb-4">
+				<img src="@competition.Emblem" alt="Competition Emblem" class="img-fluid" style="max-height: 200px;">
+			</div>
+		}
+
+		<ActionButton ButtonText="Get Next Game"
+					  ButtonClass="btn-success"
+					  OnClick="GenerateMatchup"
+					  IsDisabled="@(matchup != null)" />
+	</div>
 }
 
 @if (isGameRunning){
@@ -65,11 +75,22 @@ OnCancel="CloseStopGameModal" />
 	private HubConnection? hubConnection;
 
 	private Matchup? matchup;
+	private Competition? competition;
 	private string? selectedLogType;
 	private ConfirmationModal? stopGameModal;
 
 	private bool isGameRunning = false;
 	private CancellationTokenSource? gameTimerCts;
+
+	private async Task GetCompetition()
+	{
+		var competitionResult = await CompetitionService.GetCompetitionAsync();
+
+		if (competitionResult.Success)
+		{
+			competition = competitionResult.Data;
+		}
+	}
 
 	private async Task GenerateMatchup()
 	{
@@ -211,6 +232,7 @@ OnCancel="CloseStopGameModal" />
 			.Build();
 
 		await hubConnection.StartAsync();
+		await GetCompetition();
 	}
 
 	public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
