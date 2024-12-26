@@ -7,5 +7,6 @@ namespace Pin.LiveSports.Core.Services.Interfaces
     {
         Task<ResultModel<IEnumerable<Team>>> GetAllTeamsAsync();
         Task<ResultModel<Matchup>> GenerateMatchupAsync();
+        Task<ResultModel<Competition>> GetCompetitionAsync();
     }
 }

@@ -45,6 +45,30 @@ namespace Pin.LiveSports.Core.Services
             }
         }
 
+        public async Task<ResultModel<Competition>> GetCompetitionAsync()
+        {
+            var result = new ResultModel<Competition>();
+            try
+            {
+                var jsonData = await File.ReadAllTextAsync(_dataFilePath);
+
+                var root = JsonSerializer.Deserialize<Root>(jsonData, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                var competition = root?.Competition ?? new Competition();
+
+                result.Data = competition;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                result.Errors.Add($"An error occurred while fetching competition: {ex.Message}");
+                return result;
+            }
+        }
+
         public async Task<ResultModel<Matchup>> GenerateMatchupAsync()
         {
             var result = new ResultModel<Matchup>();
