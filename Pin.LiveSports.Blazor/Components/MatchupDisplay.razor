@@ -13,7 +13,16 @@
 
     <div class="col-2 d-flex align-items-center justify-content-center my-4">
         <div class="d-flex flex-column align-items-center">
-            <h5 class="@currentMinuteClass mb-2 fw-bold h4">@Matchup.CurrentMinute'</h5>
+            @if(Matchup.HasStarted)
+            {
+                <h5 class="@currentMinuteClass mb-2 fw-bold h4">@Matchup.CurrentMinute'</h5>
+            }
+            else if(Matchup.HasFinished){
+                <p class="@currentMinuteClass mb-2 text-muted">game over</p>
+            }
+            else if (!Matchup.HasStarted && !string.IsNullOrEmpty(Matchup.StartTime)){
+                <p class="@currentMinuteClass mb-2 text-muted">kickoff @Matchup.StartTime</p>
+            }
             <p class="h1 fw-bold mb-0">@Matchup.TeamAScore - @Matchup.TeamBScore</p>
         </div>
     </div>

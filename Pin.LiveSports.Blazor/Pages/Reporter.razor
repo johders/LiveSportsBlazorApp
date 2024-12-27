@@ -9,13 +9,13 @@
 @if (matchup != null && matchup.StartTime != null)
 {
 	<ActionButton ButtonText="Start Game"
-				  ButtonClass="btn-primary"
-				  OnClick="StartGame"
-				  IsDisabled="@isGameRunning" />
+	ButtonClass="btn-primary"
+	OnClick="StartGame"
+	IsDisabled="@isGameRunning" />
 
 	<ActionButton ButtonText="Stop Game"
-				  ButtonClass="btn-danger"
-				  OnClick="ShowStopGameModal" />
+	ButtonClass="btn-danger"
+	OnClick="ShowStopGameModal" />
 
 	<MatchupDisplay Matchup="matchup" />
 	<GoalSummary Matchup="matchup" />
@@ -26,45 +26,20 @@ else if (matchup != null)
 	<div class="d-flex vh-100 flex-column justify-content-center align-items-center text-center">
 		@if (competition?.Emblem != null)
 		{
-			<div class="mb-4">
-				<img src="@competition.Emblem" alt="Competition Emblem" class="img-fluid" style="max-height: 200px;">
-			</div>
+			<CompetitionEmblem Competition="competition"/>
 		}
+
+		<MatchupPreview Matchup="matchup"/>
 
 		<div class="d-flex flex-column align-items-center mb-3">
 			<label for="startTime" class="form-label fw-bold text-center">Set Start Time</label>
 			<input type="time" id="startTime" @onchange="HandleStartTimeChange" class="form-control w-auto" style="max-width: 200px;" />
 		</div>
 
-		<div class="row align-items-center text-center">
-
-			<div class="col-5 p-3">
-				<img src="@matchup.TeamA.Crest"
-					 alt="@matchup.TeamA.Name Crest"
-					 class="img-fluid mb-2 mx-auto d-block"
-					 style="max-height: 50px;" />
-				<span class="team-underline">@matchup.TeamA.Name</span>
-			</div>
-
-			<div class="col-2 d-flex align-items-center justify-content-center my-4">
-				<div class="d-flex flex-column align-items-center">
-					<p class="h5">vs</p>
-				</div>
-			</div>
-
-			<div class="col-5 p-3">
-				<img src="@matchup.TeamB.Crest"
-					 alt="@matchup.TeamB.Name Crest"
-					 class="img-fluid mb-2 mx-auto d-block"
-					 style="max-height: 50px;" />
-				<span class="team-underline">@matchup.TeamB.Name</span>
-			</div>
-		</div>
-
 		<ActionButton ButtonText="Report Game"
-					  ButtonClass="btn-success"
-					  OnClick="SetTimeAndSendMatchup"
-					  IsDisabled="isReportButtonDisabled" />
+		ButtonClass="btn-success"
+		OnClick="SetTime"
+		IsDisabled="isReportButtonDisabled" />
 	</div>
 }
 
@@ -95,12 +70,12 @@ else if (matchup != null)
 }
 
 <ConfirmationModal @ref="stopGameModal"
-				   Title="Confirm Stop Game"
-				   Message="Are you sure you want to stop the game?"
-				   ConfirmButtonText="Stop Game"
-				   CancelButtonText="Cancel"
-				   OnConfirm="StopGame"
-				   OnCancel="CloseStopGameModal" />
+Title="Confirm Stop Game"
+Message="Are you sure you want to stop the game?"
+ConfirmButtonText="Stop Game"
+CancelButtonText="Cancel"
+OnConfirm="StopGame"
+OnCancel="CloseStopGameModal" />
 
 
 @code {
@@ -129,11 +104,15 @@ else if (matchup != null)
 
 	private void HandleStartTimeChange(ChangeEventArgs e)
 	{
-		startTime = e.Value?.ToString();
+		string timeString = e.Value?.ToString();
+		DateTime time = DateTime.Parse(timeString);
+		string formattedTime = time.ToString("HH:mm");
+
+		startTime = formattedTime;
 		isReportButtonDisabled = string.IsNullOrEmpty(startTime);
 	}
 
-	private async Task SetTimeAndSendMatchup()
+	private async Task SetTime()
 	{
 		if (startTime == null)
 		{
@@ -156,13 +135,7 @@ else if (matchup != null)
 		{
 			matchup = matchupResult.Data;
 			matchup.CurrentMinute = 0;
-			//matchup.StartTime = startTime.Value.ToShortTimeString();
 			isGameRunning = false;
-
-			// if (hubConnection is not null && IsConnected)
-			// {
-			// 	await hubConnection.SendAsync("SendMatchup", matchup);
-			// }
 		}
 	}
 
@@ -221,8 +194,14 @@ else if (matchup != null)
 		if (isGameRunning || matchup == null) return;
 
 		isGameRunning = true;
-		gameTimerCts = new CancellationTokenSource();
 
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("StartGame", new ReportEventLog{ Type = "Kickoff", Description = "Kickoff", Details = $"Game started on {DateTime.Now.ToShortDateString()} - {matchup.StartTime}" });
+			RefreshGame();
+		}
+
+		gameTimerCts = new CancellationTokenSource();
 
 		while (!gameTimerCts.Token.IsCancellationRequested && matchup.CurrentMinute < 90)
 		{
@@ -269,6 +248,7 @@ else if (matchup != null)
 
 		matchup = null;
 		CloseStopGameModal();
+		await GenerateMatchup();
 	}
 
 	private void HandleLogTypeSelected(string logType)
