@@ -14,7 +14,7 @@
 		<div class="mb-3">
 			<label class="form-label fw-bold">Team</label>
 			<select @onchange="HandleTeamSelection" class="form-control">
-				<option value="" disabled>Select a team</option>
+				<option value="" disabled selected>Select a team</option>
 				@if (Matchup != null)
 				{
 					<option value="@Matchup.TeamA.Name">@Matchup.TeamA.Name</option>
@@ -28,7 +28,7 @@
 			<div class="mb-3">
 				<label class="form-label fw-bold">Player</label>
 				<select @bind="selectedPlayer" class="form-control">
-					<option value="" disabled>Select a player</option>
+					<option value="" disabled selected>Select a player</option>
 					@foreach (var player in players)
 					{
 						<option value="@player.Name">@player.Name</option>

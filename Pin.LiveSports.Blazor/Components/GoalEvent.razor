@@ -1,5 +1,5 @@
 ﻿<div>
-    <h5 class="fw-bolder"><span class="player-highlight">@Log.Team</span> Scored</h5>
+    <h5 class="fw-bolder"><span class="team-underline">@Log.Team</span> Scored</h5>
     <p class="mb-0 text-muted">@Log.Details</p>
 </div>
 
@@ -26,13 +26,28 @@
              style="max-height: 50px;" />
         <h4><span class="team-underline">@LiveMatchup.TeamB.Name</span></h4>
     </div>
-    <div class="d-flex justify-content-end align-items-center mb-0">
-        <div>
-            <p class="h5 text-end my-0"><span class="text-muted m-2 player-highlight">@Log.Player</span></p>
-            <p class="text-muted m-2 text-end">@Log.Team</p>
+
+    @if (Log.Team == LiveMatchup.TeamA.Name)
+    {
+        <div class="d-flex justify-content-start align-items-center mb-1">
+            <img src="images/goal.png" alt="Goal" style="max-height: 25px; margin-right: 8px;" />
+            <div>
+                <p class="h6 text-start my-0"><span class="text-muted m-0 player-highlight">@Log.Player</span></p>
+                <p class="text-muted text-start m-0 team-name">@Log.Team</p>
+            </div>
         </div>
-        <img src="images/goal.png" alt="Goal" style="max-height: 30px;" />
-    </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-end align-items-center mb-1">
+            <div>
+                <p class="h6 text-end my-0"><span class="text-muted m-0 player-highlight">@Log.Player</span></p>
+                <p class="text-muted m-0 text-end team-name">@Log.Team</p>
+            </div>
+            <img src="images/goal.png" alt="Goal" style="max-height: 25px; margin-left: 8px;" />
+        </div>
+    }
+    
 </div>
 
 @code {
