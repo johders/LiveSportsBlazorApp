@@ -46,7 +46,7 @@
                                 <th>Name</th>
                                 <th>Position</th>
                                 <th>Status</th>
-                                <th>Cards</th>
+                                <th>Events</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,7 +69,28 @@
                                             <span class="badge bg-secondary">Benched</span>
                                         }
                                     </td>
-                                    <td>Red: @player.RedCardCount | Yellow: @player.YellowCardCount</td>
+                                    <td>
+                                        @for (int i = 0; i < player.YellowCardCount; i++)
+                                        {
+                                            <img src="images/yellow-card.png" alt="Yellow Card" title="Yellow Card" style="height: 20px; width: 20px; margin-right: 2px;" />
+                                        }
+                                        @for (int i = 0; i < player.RedCardCount; i++)
+                                        {
+                                            <img src="images/red-card.png" alt="Red Card" title="Red Card" style="height: 20px; width: 20px; margin-right: 2px;" />
+                                        }
+                                        @for (int i = 0; i < player.SubbedInCount; i++)
+                                        {
+                                            <img src="images/in-arrow.png" alt="Subbed In" title="Subbed In" style="height: 20px; width: 20px; margin-right: 2px;" />
+                                        }
+                                        @for (int i = 0; i < player.SubbedOutCount; i++)
+                                        {
+                                            <img src="images/out-arrow.png" alt="Subbed Out" title="Subbed Out" style="height: 20px; width: 20px; margin-right: 2px;" />
+                                        }
+                                        @for (int i = 0; i < player.GoalCount; i++)
+                                        {
+                                            <img src="images/goal.png" alt="Goal" title="Goal" style="height: 20px; width: 20px; margin-right: 2px;" />
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>

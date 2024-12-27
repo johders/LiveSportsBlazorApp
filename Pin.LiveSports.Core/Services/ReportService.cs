@@ -91,6 +91,8 @@ namespace Pin.LiveSports.Core.Services
             else if (teamName == _matchup.TeamB.Name)
                 _matchup.TeamBScore++;
 
+            team.IncrementScoredGoals(playerName);
+
             var log = new ReportEventLog
             {
                 Minute = minute,

@@ -30,6 +30,14 @@
             player.IsPlaying = false;
         }
 
+        public void IncrementScoredGoals(string playerName)
+        {
+            var player = Squad.FirstOrDefault(p => p.Name == playerName);
+            if (player == null) return;
+
+            player.GoalCount++;
+        }
+
         public void PerformSubstitution(string playerIn, string playerOut)
         {
             var playerGoingOut = Squad.FirstOrDefault(p => p.Name == playerOut);
@@ -38,7 +46,10 @@
             if (playerGoingOut != null && playerComingIn != null)
             {
                 playerGoingOut.IsPlaying = false;
+                playerGoingOut.SubbedOutCount++;
+
                 playerComingIn.IsPlaying = true;
+                playerComingIn.SubbedInCount++;
             }
         }
     }
