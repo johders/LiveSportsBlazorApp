@@ -3,6 +3,16 @@
     color: #83ff00;
 }
 
+.details {
+    background-color: black;
+    color: white;
+}
+
+    .details:hover {
+        background-color: #83ff00;
+        color: black;
+    }
+
 .team-underline {
     border-bottom: 3px solid #83ff00;
 }

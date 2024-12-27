@@ -150,20 +150,20 @@ else
 				{
 					minutesSinceLastUpdate = minute - liveMatchup.EventLogs.First().Minute;
 				}
-				InvokeAsync(StateHasChanged);
+				StateHasChanged();
 			}
 		});
 
 		hubConnection.On<Matchup>("ReceiveMatchup", (matchup) =>
 		{
 			liveMatchup = ReportService.GetMatchup();
-			InvokeAsync(StateHasChanged);
+			StateHasChanged();
 		});
 
 		hubConnection.On<ReportEventLog>("ReceiveStartGame", (ReportEventLog) =>
 		{
 			liveMatchup = ReportService.GetMatchup();
-			InvokeAsync(StateHasChanged);
+			StateHasChanged();
 		});
 
 		hubConnection.On<ReportEventLog>("ReceiveEventLog", (eventLog) =>
