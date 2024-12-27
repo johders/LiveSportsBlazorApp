@@ -197,15 +197,21 @@ OnCancel="CloseStopGameModal" />
 
 		if (hubConnection is not null && IsConnected)
 		{
-			await hubConnection.SendAsync("StartGame", new ReportEventLog{ Type = "Kickoff", Description = "Kickoff", Details = $"Game started on {DateTime.Now.ToShortDateString()} - {matchup.StartTime}" });
+			await hubConnection.SendAsync("StartGame", new ReportEventLog
+			{ 
+				Type = "Kickoff", 
+				Description = "Kickoff", 
+				Details = $"Game started on {DateTime.Now.ToShortDateString()} - {matchup.StartTime}" 
+			});
+
 			RefreshGame();
 		}
 
 		gameTimerCts = new CancellationTokenSource();
 
 		while (!gameTimerCts.Token.IsCancellationRequested && matchup.CurrentMinute < 90)
-		{
-			await Task.Delay(5333, gameTimerCts.Token);
+		{ //5333
+			await Task.Delay(333, gameTimerCts.Token);
 			matchup.CurrentMinute++;
 
 			if (hubConnection is not null && IsConnected)
@@ -217,7 +223,50 @@ OnCancel="CloseStopGameModal" />
 
 			if (matchup.CurrentMinute == 45)
 			{
-				// Half-time logic can be added here, e.g., pause or notify
+				if (hubConnection is not null && IsConnected)
+				{
+					await hubConnection.SendAsync("SendGameMarker", new ReportEventLog 
+					{ 
+						Type = "HalftimeStart", 
+						Description = "End of first half", 
+						Minute = matchup.CurrentMinute,
+						Details = $"Half time: {DateTime.Now.ToShortDateString()} - {matchup.StartTime}" 
+					});
+
+					RefreshGame();
+				}
+			}
+
+			if (matchup.CurrentMinute == 46)
+			{
+				if (hubConnection is not null && IsConnected)
+				{
+					await hubConnection.SendAsync("SendGameMarker", new ReportEventLog
+						{
+							Type = "HalftimeEnd",
+							Description = "Start of second half",
+							Minute = matchup.CurrentMinute,
+							Details = $"Second half started: {DateTime.Now.ToShortDateString()} - {matchup.StartTime}"
+						});
+
+					RefreshGame();
+				}
+			}
+		}
+
+		if (matchup.CurrentMinute == 90)
+		{
+			if (hubConnection is not null && IsConnected)
+			{
+				await hubConnection.SendAsync("SendGameMarker", new ReportEventLog
+					{
+						Type = "Fulltime",
+						Description = "Game ended",
+						Minute = matchup.CurrentMinute,
+						Details = $"Game ended: {DateTime.Now.ToShortDateString()} - {matchup.StartTime}"
+					});
+
+				RefreshGame();
 			}
 		}
 	}

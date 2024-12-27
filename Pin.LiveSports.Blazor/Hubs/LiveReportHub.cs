@@ -63,6 +63,12 @@ namespace Pin.LiveSports.Blazor.Hubs
             await Clients.Others.SendAsync("ReceiveStartGame");
         }
 
+        public async Task SendGameMarker(ReportEventLog eventLog)
+        {
+            _reportService.InsertEventLog(eventLog);
+            await Clients.Others.SendAsync("ReceiveGameMarker");
+        }
+
         public async Task StopGame(Matchup matchup, ReportEventLog eventLog)
         {
             _reportService.InsertEventLog(eventLog);

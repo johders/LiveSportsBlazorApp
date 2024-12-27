@@ -1,0 +1,47 @@
+﻿<div>
+    <h5 class="fw-bolder"><span class="player-highlight">@Log.Team</span> Scored</h5>
+    <p class="mb-0 text-muted">@Log.Details</p>
+</div>
+
+<div class="row text-center border w-100 m-auto bg-light rounded-3 mb-3">
+    <p class="text-center text-muted my-2">goal</p>
+    <div class="col-4 my-3">
+        <img src="@LiveMatchup.TeamA.Crest"
+             alt="@LiveMatchup.TeamA.Name Crest"
+             class="img-fluid mb-2 mx-auto d-block"
+             style="max-height: 50px;" />
+        <h4><span class="team-underline">@LiveMatchup.TeamA.Name</span></h4>
+    </div>
+
+    <div class="col-4 d-flex align-items-center justify-content-center my-4">
+        <div class="d-flex align-items-center">
+            <p class="fw-bold mb-0 h1">@Scores.TeamAScore - @Scores.TeamBScore</p>
+        </div>
+    </div>
+
+    <div class="col-4 my-3">
+        <img src="@LiveMatchup.TeamB.Crest"
+             alt="@LiveMatchup.TeamB.Name Crest"
+             class="img-fluid mb-2 mx-auto d-block"
+             style="max-height: 50px;" />
+        <h4><span class="team-underline">@LiveMatchup.TeamB.Name</span></h4>
+    </div>
+    <div class="d-flex justify-content-end align-items-center mb-0">
+        <div>
+            <p class="h5 text-end my-0"><span class="text-muted m-2 player-highlight">@Log.Player</span></p>
+            <p class="text-muted m-2 text-end">@Log.Team</p>
+        </div>
+        <img src="images/goal.png" alt="Goal" style="max-height: 30px;" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ReportEventLog Log { get; set; } = new();
+
+    [Parameter]
+    public Matchup LiveMatchup { get; set; } = new();
+
+    [Parameter]
+    public (int TeamAScore, int TeamBScore) Scores { get; set; }
+}

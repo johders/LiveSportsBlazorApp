@@ -1,0 +1,21 @@
+﻿<div class="time-indicator-marker">
+    @Minute' @GetGameMarker()
+</div>
+
+@code {
+    [Parameter]
+    public string LogType { get; set; } = string.Empty;
+
+    [Parameter]
+    public int Minute { get; set; }
+
+    private string GetGameMarker()
+    {
+        return LogType switch
+        {
+            "Kickoff" or "HalftimeStart" => "first half",
+            "HalftimeEnd" or "Fulltime" => "second half",
+            _ => "unknown period"
+        };
+    }
+}

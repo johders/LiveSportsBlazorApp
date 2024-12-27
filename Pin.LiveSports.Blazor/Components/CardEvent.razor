@@ -1,0 +1,22 @@
+﻿<div class="card-event d-flex align-items-center p-2 bg-light">
+    <img src="@GetCardImage()" alt="@CardType" class="card-icon me-3" />
+    <div>
+        <h5 class="mb-0 player-highlight">@Player</h5>
+        <p class="mb-0 text-muted">@Team</p>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string CardType { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Player { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Team { get; set; } = string.Empty;
+
+    private string GetCardImage()
+    {
+        return CardType == "Yellow Card" ? "images/yellow-card.png" : "images/red-card.png";
+    }
+}

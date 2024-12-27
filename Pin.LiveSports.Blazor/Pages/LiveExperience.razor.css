@@ -10,16 +10,6 @@
     margin-bottom: 10px;
     width: 100px;
 }
-
-.time-indicator-marker {
-    background-color: #83ff00;
-    color: black;
-    border-radius: 50px;
-    font-size: 1rem;
-    margin-bottom: 10px;
-    width: 150px;
-}
-
 .bi-clock {
     color: #83ff00;
 }
@@ -28,38 +18,8 @@
     color: #83ff00;
 }
 
-.vertical-line {
-    position: relative;
-    min-height: 100%;
-    width: 2px;
-    color: lightgray;
-    height: 40px;
-    margin: 0.5rem 0;
-}
-
-    .vertical-line::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        min-height: 100%;
-        width: 2px;
-        background-color: lightgrey;
-    }
-
 .row {
     height: 100%;
-}
-
-.card-event {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-}
-
-.card-icon {
-    max-height: 40px;
 }
 
 .manual-event {
@@ -95,15 +55,6 @@
         background-color: lightgray;
         z-index: -100;
     }
-
-.substitution-event {
-    position: relative;
-}
-
-.arrow-icon {
-    width: 24px;
-    height: auto;
-}
 
 .bottom-0 {
     bottom: 0;

@@ -28,27 +28,19 @@
 		{
 			@if(log.Type == "Kickoff")
 			{
-				<div class="time-indicator-marker">
-					<i class="bi bi-clock me-2"></i> @log.Minute' first half
-				</div>
+				<TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
 			}
 			else if (log.Type == "HalftimeStart")
 			{
-				<div class="time-indicator-marker">
-					<i class="bi bi-clock me-2"></i> @log.Minute' first half
-				</div>
+				<TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
 			}
-			else if (log.Type == "HalfTimeEnd")
+			else if (log.Type == "HalftimeEnd")
 			{
-				<div class="time-indicator-marker">
-					<i class="bi bi-clock me-2"></i> @log.Minute' second half
-				</div>
+				<TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
 			}
 			else if (log.Type == "Fulltime")
 			{
-				<div class="time-indicator-marker">
-					<i class="bi bi-clock me-2"></i> @log.Minute' second half
-				</div>
+				<TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
 			}
 			else
 			{
@@ -62,14 +54,7 @@
 					<div class="col-10 d-flex flex-column">
 						@if (log.Type.Contains("Card"))
 						{
-							<div class="card-event d-flex align-items-center p-2 bg-light">
-								<img src="images/@(log.Type == "Yellow Card" ? "yellow-card.png" : "red-card.png")"
-									 alt="@log.Type" class="card-icon me-3" />
-								<div>
-									<h5 class="mb-0 player-highlight">@log.Player</h5>
-									<p class="mb-0 text-muted">@log.Team</p>
-								</div>
-							</div>
+							<CardEvent CardType="@log.Type" Player="@log.Player" Team="@log.Team" />
 						}
 						else if (log.Type == "Manual")
 						{
@@ -80,27 +65,7 @@
 						}
 						else if (log.Type == "Substitution")
 						{
-							<div class="substitution-event p-2 bg-light rounded position-relative">
-								<p class="text-center text-muted mb-2">substitution</p>
-
-								<div class="d-flex align-items-center justify-content-center position-relative">
-									<div class="text-start pe-3">
-										<h5 class="player-highlight mb-0 fw-bold">@log.PlayerOut</h5>
-									</div>
-
-									<div class="d-flex align-items-center">
-										<img src="images/out-arrow.png" alt="Player Out" class="arrow-icon me-2" />
-										<div class="vertical-line"></div>
-										<img src="images/in-arrow.png" alt="Player In" class="arrow-icon ms-2" />
-									</div>
-
-									<div class="text-end ps-3">
-										<h5 class="player-highlight mb-0 fw-bold">@log.PlayerIn</h5>
-									</div>
-
-								</div>
-								<p class="text-muted mb-0">@log.Team</p>
-							</div>
+							<SubstitutionEvent PlayerOut="@log.PlayerOut" PlayerIn="@log.PlayerIn" Team="@log.Team" />
 						}
 						else if (log.Type == "Goal")
 						{
@@ -109,42 +74,7 @@
 
 							var scores = scoreSnapshots[log];
 
-							<div>
-								<h5 class="fw-bolder"><span class="player-highlight">@log.Team</span> Scored</h5>
-								<p class="mb-0 text-muted">@log.Details</p>
-							</div>
-
-							<div class="row text-center border w-100 m-auto bg-light rounded-3 mb-3">
-								<p class="text-center text-muted my-2">goal</p>
-								<div class="col-4 my-3">
-									<img src="@liveMatchup.TeamA.Crest"
-										 alt="@liveMatchup.TeamA.Name Crest"
-										 class="img-fluid mb-2 mx-auto d-block"
-										 style="max-height: 50px;" />
-									<h4><span class="team-underline">@liveMatchup.TeamA.Name</span></h4>
-								</div>
-
-								<div class="col-4 d-flex align-items-center justify-content-center my-4">
-									<div class="d-flex align-items-center">
-										<p class="fw-bold mb-0 h1">@scores.TeamAScore - @scores.TeamBScore</p>
-									</div>
-								</div>
-
-								<div class="col-4 my-3">
-									<img src="@liveMatchup.TeamB.Crest"
-										 alt="@liveMatchup.TeamB.Name Crest"
-										 class="img-fluid mb-2 mx-auto d-block"
-										 style="max-height: 50px;" />
-									<h4><span class="team-underline">@liveMatchup.TeamB.Name</span></h4>
-								</div>
-								<div class="d-flex justify-content-end align-items-center mb-0">
-									<div>
-										<p class="h5 text-end my-0"><span class="text-muted m-2 player-highlight">@log.Player</span></p>
-										<p class="text-muted m-2 text-end">@log.Team</p>
-									</div>
-									<img src="images/goal.png" alt="Goal" style="max-height: 30px;" />
-								</div>
-							</div>
+							<GoalEvent Log="log" LiveMatchup="liveMatchup" Scores="scores" />
 						}
 
 						else if (log.Type == "Stop")

@@ -1,0 +1,14 @@
+﻿.card-event {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.card-icon {
+    max-height: 40px;
+}
+
+.player-highlight {
+    border-bottom: 3px solid #83ff00;
+}

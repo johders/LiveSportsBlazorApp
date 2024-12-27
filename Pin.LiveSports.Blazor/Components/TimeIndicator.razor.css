@@ -1,0 +1,9 @@
+﻿.time-indicator-marker {
+    background-color: #83ff00;
+    color: black;
+    border-radius: 50px;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    width: 150px;
+    text-align: center;
+}
