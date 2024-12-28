@@ -9,7 +9,7 @@
 
     <GoalSummary Matchup="matchup" />
 
-    <h2 class="left-border fw-bold my-0">&nbsp;Game Events</h2>
+    <h2 class="left-border fw-bold my-0">&nbsp;Step by step</h2>
     <p class="left-border-min">&nbsp; Game ended on @matchup.EndTime</p>
 
     <div class="container d-flex flex-column w-100">
@@ -34,10 +34,7 @@
                     }
                     else
                     {
-                        <div class="manual-event ps-2">
-                            <h5>@log.Description</h5>
-                            <p class="mb-0 text-muted">@log.Details</p>
-                        </div>
+                        <ManualEvent Description="@log.Description" Details="@log.Details" />
                     }
                 </div>
             </div>

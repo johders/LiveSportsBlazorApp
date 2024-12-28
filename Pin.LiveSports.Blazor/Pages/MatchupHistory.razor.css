@@ -1,0 +1,7 @@
+﻿.left-border {
+    border-left: 4px solid #83ff00;
+}
+
+.left-border-min {
+    border-left: 4px dotted #83ff00;
+}

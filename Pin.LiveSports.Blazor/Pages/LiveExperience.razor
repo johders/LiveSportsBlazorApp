@@ -14,7 +14,7 @@
 
 	<GoalSummary Matchup="liveMatchup" />
 
-	<h2 class="left-border fw-bold my-0">&nbsp;Fase per fase</h2>
+	<h2 class="left-border fw-bold my-0">&nbsp;Step by step</h2>
 	if (liveMatchup.EventLogs.Count > 0 && string.IsNullOrEmpty(endDateTime))
 	{
 		<p class="left-border-min">&nbsp; last update @minutesSinceLastUpdate minutes ago</p>
@@ -53,13 +53,6 @@
 						{
 							<CardEvent CardType="@log.Type" Player="@log.Player" Team="@log.Team" />
 						}
-						else if (log.Type == "Manual")
-						{
-							<div class="manual-event ps-2">
-								<h5>@log.Description</h5>
-								<p class="mb-0 text-muted">@log.Details</p>
-							</div>
-						}
 						else if (log.Type == "Substitution")
 						{
 							<SubstitutionEvent PlayerOut="@log.PlayerOut" PlayerIn="@log.PlayerIn" Team="@log.Team" />
@@ -69,13 +62,9 @@
 							var scores = liveMatchup.ScoreSnapshots[log.Id.ToString()];
 							<GoalEvent Log="log" LiveMatchup="liveMatchup" Scores="scores" />
 						}
-
-						else if (log.Type == "Stop")
+						else
 						{
-							<div class="substitution-event p-3">
-								<h5>@log.Description</h5>
-								<p class="mb-0 text-muted">@log.Details</p>
-							</div>
+							<ManualEvent Description="@log.Description" Details="@log.Details" />
 						}
 					</div>
 				</div>
@@ -91,9 +80,8 @@ else
 			<CompetitionEmblem Competition="competition" />
 		}
 
-		<div class="spinner-border mb-3 spinner-custom" role="status" style="width: 4rem; height: 4rem;">
-			<span class="visually-hidden">Loading...</span>
-		</div>
+		<LoadingSpinner/>
+
 		<h3 class="text-muted">Waiting for the next game...</h3>
 	</div>
 }
