@@ -286,14 +286,16 @@ OnCancel="CloseStopGameModal" />
 	{
 		gameTimerCts?.Cancel();
 		isGameRunning = false;
-		if (matchup != null)
-		{
-			matchup.CurrentMinute = 0;
-		}
 
 		if (hubConnection is not null && IsConnected)
 		{
-			await hubConnection.SendAsync("StopGame", matchup, new ReportEventLog { Type = "Stop", Description = "Game ended", Details = "Game ended prematurely due to human rights violations" });
+			await hubConnection.SendAsync("StopGame", matchup, new ReportEventLog 
+			{ 
+				Type = "Stop", 
+				Description = "Game ended", 
+				Details = "Game ended prematurely due to human rights violations",
+				Minute = matchup.CurrentMinute
+			});
 		}
 
 		matchup = null;

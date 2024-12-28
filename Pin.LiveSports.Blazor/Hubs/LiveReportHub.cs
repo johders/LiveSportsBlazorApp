@@ -51,8 +51,8 @@ namespace Pin.LiveSports.Blazor.Hubs
 
         public async Task SendGoalLog(ReportEventLog eventLog)
         {
-            _reportService.LogGoal(eventLog.Team, eventLog.Player, eventLog.Minute);
             _reportService.InsertEventLog(eventLog);
+            _reportService.LogGoal(eventLog.Team, eventLog.Player, eventLog.Minute);
             await Clients.Others.SendAsync("ReceiveEventLog", eventLog);
         }
 
@@ -72,7 +72,7 @@ namespace Pin.LiveSports.Blazor.Hubs
         public async Task StopGame(Matchup matchup, ReportEventLog eventLog)
         {
             _reportService.InsertEventLog(eventLog);
-            _reportService.AddToHistory(matchup);
+            _reportService.AddToHistory(_reportService.GetMatchup());
             await Clients.Others.SendAsync("ReceiveEventLog", eventLog);
         }
     }

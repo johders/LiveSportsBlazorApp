@@ -47,6 +47,7 @@ namespace Pin.LiveSports.Core.Services
 
         public void InsertEventLog(ReportEventLog eventLog)
         {
+            eventLog.Id = Guid.NewGuid();
             _matchup.EventLogs.Insert(0, eventLog);
         }
 
@@ -116,6 +117,7 @@ namespace Pin.LiveSports.Core.Services
                 _matchup.TeamBScore++;
 
             team.IncrementScoredGoals(playerName);
+            _matchup.SnapshotScores();
 
             var log = new ReportEventLog
             {

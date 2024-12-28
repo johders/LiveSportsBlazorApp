@@ -66,11 +66,7 @@
 						}
 						else if (log.Type == "Goal")
 						{
-
-							SnapshotScores();
-
-							var scores = scoreSnapshots[log];
-
+							var scores = liveMatchup.ScoreSnapshots[log.Id.ToString()];
 							<GoalEvent Log="log" LiveMatchup="liveMatchup" Scores="scores" />
 						}
 
@@ -182,6 +178,9 @@ else
 		if (liveMatchup?.EventLogs.Any(e => e.Type == "Stop") == true)
 		{
 			endDateTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+			liveMatchup.HasFinished = true;
+			liveMatchup.HasStarted = false;
+			StateHasChanged();
 		}
 	}
 

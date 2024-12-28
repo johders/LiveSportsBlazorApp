@@ -29,7 +29,8 @@
                     }
                     else if (log.Type == "Goal")
                     {
-                        <GoalEvent Log="log" LiveMatchup="matchup" />
+                        var scores = matchup.ScoreSnapshots[log.Id.ToString()];
+                        <GoalEvent Log="log" LiveMatchup="matchup" Scores="scores" />
                     }
                     else
                     {
@@ -54,8 +55,4 @@
     {
         matchup = ReportService.GetTodaysGames().FirstOrDefault(m => m.Id == MatchupId);
     }
-}
-
-@code {
-
 }

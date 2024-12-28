@@ -15,5 +15,19 @@ namespace Pin.LiveSports.Core.Models
         public bool HasStarted { get; set; }
         public bool HasFinished { get; set; }
         public List<ReportEventLog> EventLogs { get; set; } = new List<ReportEventLog>();
+        public Dictionary<string, (int TeamAScore, int TeamBScore)> ScoreSnapshots { get; set; }
+    = new Dictionary<string, (int TeamAScore, int TeamBScore)>();
+
+        public void SnapshotScores()
+        {
+            foreach (var log in EventLogs.Where(l => l.Type == "Goal"))
+            {
+                string logKey = log.Id.ToString();
+                if (!ScoreSnapshots.ContainsKey(logKey))
+                {
+                    ScoreSnapshots[logKey] = (TeamAScore, TeamBScore);
+                }
+            }
+        }
     }
 }

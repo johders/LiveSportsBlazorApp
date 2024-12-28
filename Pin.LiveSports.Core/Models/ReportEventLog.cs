@@ -4,6 +4,7 @@ namespace Pin.LiveSports.Core.Models
 {
     public class ReportEventLog
     {
+        public Guid Id { get; set; }
         public int Minute { get; set; }
         public string Type { get; set; }
         public string Team { get; set; }
