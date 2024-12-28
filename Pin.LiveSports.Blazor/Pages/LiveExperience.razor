@@ -131,20 +131,20 @@ else
 				{
 					minutesSinceLastUpdate = minute - liveMatchup.EventLogs.First().Minute;
 				}
-				StateHasChanged();
+				InvokeAsync(StateHasChanged);
 			}
 		});
 
 		hubConnection.On<Matchup>("ReceiveMatchup", (matchup) =>
 		{
 			liveMatchup = ReportService.GetMatchup();
-			StateHasChanged();
+			InvokeAsync(StateHasChanged);
 		});
 
 		hubConnection.On<ReportEventLog>("ReceiveStartGame", (ReportEventLog) =>
 		{
 			liveMatchup = ReportService.GetMatchup();
-			StateHasChanged();
+			InvokeAsync(StateHasChanged);
 		});
 
 		hubConnection.On<ReportEventLog>("ReceiveEventLog", (eventLog) =>
@@ -153,7 +153,15 @@ else
 			{
 				liveMatchup = ReportService.GetMatchup();
 				IsGameOverCheck();
-				StateHasChanged();
+
+				if (eventLog.Type == "Fullime")
+				{
+					endDateTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+					liveMatchup.HasFinished = true;
+					liveMatchup.HasStarted = false;
+				}
+
+				InvokeAsync(StateHasChanged);
 			}
 		});
 
@@ -183,7 +191,7 @@ else
 			endDateTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
 			liveMatchup.HasFinished = true;
 			liveMatchup.HasStarted = false;
-			StateHasChanged();
+			InvokeAsync(StateHasChanged);
 		}
 	}
 

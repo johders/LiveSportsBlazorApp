@@ -12,8 +12,10 @@ namespace Pin.LiveSports.Core.Models
         public int CurrentMinute { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
-        public bool HasStarted { get; set; }
+        public int ExtraTimeFirstHalf { get; set; }
+        public int ExtraTimeSecondHalf { get; set; }
         public bool IsLive { get; set; }
+        public bool HasStarted { get; set; }
         public bool HasFinished { get; set; }
         public List<ReportEventLog> EventLogs { get; set; } = new List<ReportEventLog>();
         public Dictionary<string, (int TeamAScore, int TeamBScore)> ScoreSnapshots { get; set; }

@@ -15,29 +15,48 @@
     <div class="container d-flex flex-column w-100">
         @foreach (var log in matchup.EventLogs)
         {
-            <div class="row align-items-start mb-4 w-100 log-line">
-                <TimeComponent Minute="@log.Minute"/>
+            @if (log.Type == "Kickoff")
+            {
+                <TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+            }
+            else if (log.Type == "HalftimeStart")
+            {
+                <TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+            }
+            else if (log.Type == "HalftimeEnd")
+            {
+                <TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+            }
+            else if (log.Type == "Fulltime")
+            {
+                <TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+            }
+            else
+            {
+                <div class="row align-items-start mb-4 w-100 log-line">
+                    <TimeComponent Minute="@log.Minute"/>
 
-                <div class="col-10 d-flex flex-column">
-                    @if (log.Type.Contains("Card"))
-                    {
-                        <CardEvent CardType="@log.Type" Player="@log.Player" Team="@log.Team" />
-                    }
-                    else if (log.Type == "Substitution")
-                    {
-                        <SubstitutionEvent PlayerOut="@log.PlayerOut" PlayerIn="@log.PlayerIn" Team="@log.Team" />
-                    }
-                    else if (log.Type == "Goal")
-                    {
-                        var scores = matchup.ScoreSnapshots[log.Id.ToString()];
-                        <GoalEvent Log="log" LiveMatchup="matchup" Scores="scores" />
-                    }
-                    else
-                    {
-                        <ManualEvent Description="@log.Description" Details="@log.Details" />
-                    }
+                    <div class="col-10 d-flex flex-column">
+                        @if (log.Type.Contains("Card"))
+                        {
+                            <CardEvent CardType="@log.Type" Player="@log.Player" Team="@log.Team" />
+                        }
+                        else if (log.Type == "Substitution")
+                        {
+                            <SubstitutionEvent PlayerOut="@log.PlayerOut" PlayerIn="@log.PlayerIn" Team="@log.Team" />
+                        }
+                        else if (log.Type == "Goal")
+                        {
+                            var scores = matchup.ScoreSnapshots[log.Id.ToString()];
+                            <GoalEvent Log="log" LiveMatchup="matchup" Scores="scores" />
+                        }
+                        else
+                        {
+                            <ManualEvent Description="@log.Description" Details="@log.Details" />
+                        }
+                    </div>
                 </div>
-            </div>
+            }
         }
     </div>
 }

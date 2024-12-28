@@ -66,6 +66,10 @@ namespace Pin.LiveSports.Blazor.Hubs
         public async Task SendGameMarker(ReportEventLog eventLog)
         {
             _reportService.InsertEventLog(eventLog);
+            if (eventLog.Type == "Fulltime")
+            {
+                _reportService.AddToHistory(_reportService.GetMatchup());
+            }
             await Clients.Others.SendAsync("ReceiveGameMarker");
         }
 
