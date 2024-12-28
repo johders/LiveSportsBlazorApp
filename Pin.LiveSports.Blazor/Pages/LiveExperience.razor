@@ -158,7 +158,22 @@ else
 		});
 
 		await hubConnection.StartAsync();
+
+		await CheckForLiveGame();
 		await GetCompetition();
+	}
+
+
+	private async Task CheckForLiveGame()
+	{
+		var activeMatchup = await hubConnection.InvokeAsync<Matchup?>("CheckLiveGame");
+
+		if (activeMatchup is not null && activeMatchup.IsLive)
+		{
+			liveMatchup = activeMatchup;
+			SnapshotScores();
+			StateHasChanged();
+		}
 	}
 
 	private void IsGameOverCheck()

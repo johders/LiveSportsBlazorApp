@@ -32,6 +32,7 @@ namespace Pin.LiveSports.Core.Services
             matchup.EndTime = DateTime.Now.ToString();
             matchup.HasStarted = false;
             matchup.HasFinished = true;
+            matchup.IsLive = false;
             _history.Add(matchup);
             OnMatchupHistoryUpdated?.Invoke();
         }
@@ -42,6 +43,7 @@ namespace Pin.LiveSports.Core.Services
         }
         public void SetMatchup(Matchup matchup)
         {
+            matchup.IsLive = true;
             _matchup = matchup;
         }
 

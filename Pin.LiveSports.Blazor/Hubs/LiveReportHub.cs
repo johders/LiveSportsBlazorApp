@@ -75,5 +75,11 @@ namespace Pin.LiveSports.Blazor.Hubs
             _reportService.AddToHistory(_reportService.GetMatchup());
             await Clients.Others.SendAsync("ReceiveEventLog", eventLog);
         }
+
+        public async Task<Matchup?> CheckLiveGame()
+        {
+            var liveMatchup = _reportService.GetMatchup();
+            return liveMatchup;
+        }
     }
 }
