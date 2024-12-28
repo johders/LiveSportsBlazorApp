@@ -45,11 +45,8 @@
 			else
 			{
 				<div class="row align-items-start mb-4 w-100 log-line">
-					<div class="col-2 d-flex flex-column align-items-center">
-						<div class="time-indicator">
-							<i class="bi bi-clock me-2"></i> @log.Minute'
-						</div>
-					</div>
+
+					<TimeComponent Minute="@log.Minute" />
 
 					<div class="col-10 d-flex flex-column">
 						@if (log.Type.Contains("Card"))
@@ -172,7 +169,7 @@ else
 			{
 				liveMatchup = ReportService.GetMatchup();
 				IsGameOverCheck();
-				InvokeAsync(StateHasChanged);
+				StateHasChanged();
 			}
 		});
 

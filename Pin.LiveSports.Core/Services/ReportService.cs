@@ -8,6 +8,10 @@ namespace Pin.LiveSports.Core.Services
     {
         private Matchup _matchup = new();
 
+        private List<Matchup> _history = new();
+
+        public event Action? OnMatchupHistoryUpdated;
+
         public List<ReportEventLog> GetEventLogs()
         {
             return _matchup.EventLogs;
@@ -20,6 +24,21 @@ namespace Pin.LiveSports.Core.Services
         public void StartGame()
         {
             _matchup.HasStarted = true;
+        }
+
+        public void AddToHistory(Matchup matchup)
+        {
+            matchup.Id = _history.Count + 1;
+            matchup.EndTime = DateTime.Now.ToString();
+            matchup.HasStarted = false;
+            matchup.HasFinished = true;
+            _history.Add(matchup);
+            OnMatchupHistoryUpdated?.Invoke();
+        }
+
+        public List<Matchup> GetTodaysGames()
+        {
+            return _history;
         }
         public void SetMatchup(Matchup matchup)
         {

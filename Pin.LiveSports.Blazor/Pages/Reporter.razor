@@ -293,7 +293,7 @@ OnCancel="CloseStopGameModal" />
 
 		if (hubConnection is not null && IsConnected)
 		{
-			await hubConnection.SendAsync("StopGame", matchup, new ReportEventLog { Type = "Stop", Description = "Game ended", Details = "It is over" });
+			await hubConnection.SendAsync("StopGame", matchup, new ReportEventLog { Type = "Stop", Description = "Game ended", Details = "Game ended prematurely due to human rights violations" });
 		}
 
 		matchup = null;

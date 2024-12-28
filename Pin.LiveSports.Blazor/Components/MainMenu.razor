@@ -1,13 +1,54 @@
-﻿<nav class="navbar navbar-light bg-light mx-3">
+﻿@inject IReportService ReportService
+
+<nav class="navbar navbar-light bg-light mx-3">
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <a class="navbar-brand" href="/">World Cup Live</a>
         <ul class="navbar-nav d-flex flex-row">
             <li class="nav-item me-3">
                 <a class="nav-link" href="reporter">Report</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item me-3">
                 <a class="nav-link" href="live">Experience Live</a>
             </li>
+            @if (MatchupHistory.Any())
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="matchupDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Matchup History
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="matchupDropdown">
+                        @foreach (var game in MatchupHistory)
+                        {
+                            <li>
+                                <a class="dropdown-item" href="/history/@game.Id">
+                                    @game.TeamA.Name vs @game.TeamB.Name
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
         </ul>
     </div>
 </nav>
+
+@code {
+    private List<Matchup> MatchupHistory = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        MatchupHistory = ReportService.GetTodaysGames();
+        ReportService.OnMatchupHistoryUpdated += UpdateMatchupHistory;
+    }
+
+    private void UpdateMatchupHistory()
+    {
+        MatchupHistory = ReportService.GetTodaysGames();
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ReportService.OnMatchupHistoryUpdated -= UpdateMatchupHistory;
+    }
+}

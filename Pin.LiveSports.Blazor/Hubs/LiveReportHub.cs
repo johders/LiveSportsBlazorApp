@@ -72,6 +72,7 @@ namespace Pin.LiveSports.Blazor.Hubs
         public async Task StopGame(Matchup matchup, ReportEventLog eventLog)
         {
             _reportService.InsertEventLog(eventLog);
+            _reportService.AddToHistory(matchup);
             await Clients.Others.SendAsync("ReceiveEventLog", eventLog);
         }
     }

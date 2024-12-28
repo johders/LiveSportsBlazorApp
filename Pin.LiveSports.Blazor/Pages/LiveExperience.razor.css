@@ -1,20 +1,4 @@
-﻿.time-indicator {
-    background-color: black;
-    color: white;
-    padding: 3px 10px;
-    border-radius: 50px;
-    font-size: 1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-    width: 100px;
-}
-.bi-clock {
-    color: #83ff00;
-}
-
-.spinner-custom {
+﻿.spinner-custom {
     color: #83ff00;
 }
 

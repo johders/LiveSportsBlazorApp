@@ -1,11 +1,12 @@
 ﻿using Pin.LiveSports.Core.Services;
 using Pin.NewInDotNet.Console;
 
-//To domonstrate the new C# 12 features, let's start by using some mock data from the core project.
+//To demonstrate the new C# 12 features, let's start by using some mock data from the core project.
+//I'll map the teams to the DemoTeam with DemoPlayer objects inside this projects
+
 var competitionService = new CompetitionService();
 var allTeams = (await competitionService.GetAllTeamsAsync()).Data;
 
-//I'll map the teams to the DemoTeam with DemoPlayer objects inside this projects
 var demoTeams = allTeams.Select(t => new DemoTeam
 {
     Name = t.Name,
