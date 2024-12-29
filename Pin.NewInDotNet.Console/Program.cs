@@ -1,4 +1,5 @@
-﻿using Pin.LiveSports.Core.Services;
+﻿using Microsoft.Extensions.Logging;
+using Pin.LiveSports.Core.Services;
 using Pin.NewInDotNet.Console;
 
 // Demonstrating C# 12 Features: Primary Constructors, Collection Expressions, and Default Lambda Expressions
@@ -27,10 +28,10 @@ internal class Program
         // 1. Primary Constructors (and a taste of Collection Expressions)
         Console.WriteLine("### Primary Constructors and Collection Expressions ###");
 
-        //Since we set up the DemoPlayer records with a primary constructor, we can just add new players to our team of Frankies
+        //Since we set up the DemoPlayer class with a primary constructor, we can just add new players to our team of Frankies
         //Two things to note here: Firstly, we are using a collection expression to populate our list of demoplayer objects. This is done with the [] notation.
-        //Secondly, thanks to having set a primary constructor for the demoplayer objects with default values, we can quickly instantiate new DemoPlayers with default values
-        //just by instantiating "new DemoPlayer()"
+        //Secondly, thanks to having set an empty constructor for the demoplayer objects with hard coded values, we can also quickly instantiate
+        //new DemoPlayers with preset values just by instantiating "new DemoPlayer()"
 
         List<DemoPlayer> lotsOfFrankies = [
             new DemoPlayer(),
@@ -45,15 +46,19 @@ internal class Program
         Console.WriteLine("Lots of Frankies:");
         lotsOfFrankies.ForEach(Console.WriteLine);
 
-        //Of course we are not limited to this and can still assign custom values to the properties:
-        List<DemoPlayer> otherPlayers = new List<DemoPlayer>();
-        otherPlayers.Add(new DemoPlayer("Jefke Delaplace", "Offence", false));
-        otherPlayers.Add(new DemoPlayer("Jean-Marie Pfaff", "Goalkeeper", false));
-        otherPlayers.Add(new DemoPlayer(Position: "Centre-Forward"));
-        otherPlayers.Add(new DemoPlayer(IsPlaying: false));
+        //Of course we are not limited to this and can still assign custom values to the properties. Note how we can use collection expressions to instantiate
+        //any type of collection:
+        DemoPlayer[] otherPlayers = [
+            new DemoPlayer("Jefke Delaplace", "Offence", false),
+            new DemoPlayer("Jean-Marie Pfaff", "Goalkeeper", false),
+            new DemoPlayer("Johan Cruijf", "Centre-Forward", false)];
+
+        //otherPlayers.Add(new DemoPlayer("Jefke Delaplace", "Offence", false));
+        //otherPlayers.Add(new DemoPlayer("Jean-Marie Pfaff", "Goalkeeper", false));
+        //otherPlayers.Add(new DemoPlayer("Johan Cruijf", "Centre-Forward", false));
 
         Console.WriteLine("\nCustom Players:");
-        otherPlayers.ForEach(Console.WriteLine);
+        otherPlayers.ToList().ForEach(Console.WriteLine);
 
         //I can definitely see its strengths in tasks like seeding data for any database throughout our course or just wanting to be able to quickly create object instances
         //for small scale application of just trying things out.
@@ -66,13 +71,20 @@ internal class Program
 
         //The spread operator would come in very useful when having to combine different collections into one. I remember our Train Station PE in semester 2 where I combined a list
         //of delayed trains and departed trains in order to make the required announcements on the board. Many loops could have been avoided using this new C# 12 feature!
+        //I also declared the otherplayers collection as an array. This can also be combined with the other collection types using the spread operator        
         DemoTeam newTeam = new DemoTeam { Name = "Demo Team" };
         List<DemoPlayer> newSquad = [.. firstTeamPlayers, .. lotsOfFrankies, .. otherPlayers];
 
+        //We are not limited to using collection, feel free to throw in single instances as well!
+        List<DemoPlayer> newerSquad = [.. newSquad, new DemoPlayer(), .. firstTeamPlayers, new DemoPlayer("Ronaldo", "Offence", true)];
+
         newTeam.Players = newSquad;
 
-        Console.WriteLine("New Team:");
+        Console.WriteLine("\nNew Team:");
         newSquad.ForEach(Console.WriteLine);
+
+        Console.WriteLine("\nNewer Team:");
+        newerSquad.ForEach(Console.WriteLine);
 
         //3. Default Lambda Expressions
         Console.WriteLine("\n### Default Lambda Expressions ###");
@@ -83,7 +95,8 @@ internal class Program
         // Besides that, it could also be useful for simplifying repeated LINQ queries as demonstrated in the demo code below.
         // After reading through the documentation, I understand this feature coming in handy for plenty other more advanced scenarios and
         // while my current experience with lambda expressions is fairly limited, I am looking forward to exploring these further in the future
-
+        // From what I understand, it can also be very useful for minimal APIs, where you can make a parameter optional, of set it to a default value,
+        // reducing null checks and additional code inside the method
 
         AddGoalsDelegate AddGoalsScored = (DemoTeam team, int goalCount = 1) =>
         {
@@ -121,9 +134,32 @@ namespace Pin.NewInDotNet.Console
     }
 }
 
-public record DemoPlayer(string Name = "Franky Van der Elst", string Position = "Defence", bool IsPlaying = true)
+public class DemoPlayer(string name, string position, bool isPlaying)
 {
+    //The primary constructor parameters also allow us to set our read-only properties
+    public string Position { get; } = position;
+
+    //Here we set an empty constructor referencing the primary constructor signature and providing hard coded values for them
+    public DemoPlayer() : this ("Franky Van der Elst", "Defence", true)
+    {
+    }
+
     public override string ToString()
-        => $"{Name} - {Position} - Is Playing: {IsPlaying}";
+        => $"{name} - {Position} - Is Playing: {isPlaying}";
+}
+
+// You can see how this can really clean up otherwise lengthy boiler plate code
+public class PropertiesDemo(string firsName, string lastName)
+{
+    public string FirsName { get; } = firsName;
+    public string LastName { get; } = lastName;
+
+}
+
+// To use a it with dependency injection, we want to keep our ILogger as readonly. This can also be done with a primary constructor!
+// This would significantly clean up classes where we use DI like in web api and mvc controllers and service classes
+public class DependencyInjectionDemo(ILogger<DependencyInjectionDemo> logger)
+{
+    private readonly ILogger<DependencyInjectionDemo> logger = logger;
 }
 
