@@ -13,5 +13,6 @@ namespace Pin.LiveSports.Core.Models
         public string PlayerOut { get; set; }
         public string Description { get; set; }
         public string Details { get; set; }
+        public string ImagePath { get; set; }
     }
 }

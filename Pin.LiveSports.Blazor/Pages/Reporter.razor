@@ -45,19 +45,6 @@ else if (matchup != null)
 
 @if (isGameRunning)
 {
-
-	<div class="extra-time-input" style="display: @(isExtraTimeFirstVisible ? "block" : "none");">
-		<label for="extraTime" class="form-label fw-bold">Enter Extra Time:</label>
-		<input type="number" id="extraTime" @bind="extraTimeFirst" class="form-control" placeholder="Enter minutes" />
-		<button class="btn btn-primary mt-2" @onclick="ConfirmExtraTime">Confirm</button>
-	</div>
-
-	<div class="extra-time-input" style="display: @(isExtraTimeSecondVisible ? "block" : "none");">
-		<label for="extraTime" class="form-label fw-bold">Enter Extra Time:</label>
-		<input type="number" id="extraTime" @bind="extraTimeSecond" class="form-control" placeholder="Enter minutes" />
-		<button class="btn btn-primary mt-2" @onclick="ConfirmExtraTime">Confirm</button>
-	</div>
-
 	<ReporterDashboard OnLogTypeSelected="HandleLogTypeSelected" />
 
 	@if (selectedLogType == "Manual")
@@ -79,6 +66,10 @@ else if (matchup != null)
 	else if (selectedLogType == "Goal")
 	{
 		<GoalLogForm Matchup="matchup" SubmitLogCallback="SubmitGoalLog" OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "Media")
+	{
+		<MediaLogForm CurrentMinute="matchup.CurrentMinute" SubmitLogCallback="SubmitManualLog" OnClose="CloseLogForm" />
 	}
 }
 
@@ -104,49 +95,6 @@ OnCancel="CloseStopGameModal" />
 
 	private bool isReportButtonDisabled = true;
 	private string? startTime;
-
-	private int extraTimeFirst = 0;
-	private int extraTimeSecond = 0;
-	private bool isExtraTimeFirstVisible => (matchup.CurrentMinute >= 30 && matchup.CurrentMinute <= 44);
-	private bool isExtraTimeSecondVisible => (matchup.CurrentMinute >= 75 && matchup.CurrentMinute <= 90);			
-	
-	private bool isExtraTimeFirstActive = false;
-	private bool isExtraTimeSecondActive = false;
-	private int extraTimeMinutesElapsed = 0;
-
-	private async Task ConfirmExtraTime()
-	{
-		if (extraTimeFirst > 0)
-		{
-			if (hubConnection is not null && IsConnected)
-			{
-				await hubConnection.SendAsync("SendGameMarker", new ReportEventLog
-					{
-						Type = "ExtraTimeFirst",
-						Description = $"Extra Time Added: {extraTimeFirst} minutes",
-						Minute = matchup.CurrentMinute,
-						Details = $"Extra time added at minute {matchup.CurrentMinute}"
-					});
-			}
-
-			extraTimeFirst = 0;
-		}
-		if (extraTimeSecond > 0)
-		{
-			if (hubConnection is not null && IsConnected)
-			{
-				await hubConnection.SendAsync("SendGameMarker", new ReportEventLog
-					{
-						Type = "ExtraTimeSecond",
-						Description = $"Extra Time Added: {extraTimeSecond} minutes",
-						Minute = matchup.CurrentMinute,
-						Details = $"Extra time added at minute {matchup.CurrentMinute}"
-					});
-			}
-
-			extraTimeSecond = 0;
-		}
-	}
 
 	private async Task GetCompetition()
 	{
@@ -268,7 +216,7 @@ OnCancel="CloseStopGameModal" />
 
 		while (!gameTimerCts.Token.IsCancellationRequested && matchup.CurrentMinute < 90)
 		{   //5333
-			await Task.Delay(533, gameTimerCts.Token);
+			await Task.Delay(1333, gameTimerCts.Token);
 			matchup.CurrentMinute++;
 
 			if (hubConnection is not null && IsConnected)

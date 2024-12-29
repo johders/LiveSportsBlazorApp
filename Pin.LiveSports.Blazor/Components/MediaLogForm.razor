@@ -1,0 +1,150 @@
+﻿<div class="card shadow-lg border-0 bg-light my-3 w-75 m-auto">
+
+	<div class="card-header bg-warning bg-opacity-75 text-white text-center">
+		<h5 class="mb-0">Upload Media</h5>
+	</div>
+
+	<div class="card-body">
+
+		@if (serviceErrors != null && serviceErrors.Any())
+		{
+			<div class="alert alert-danger">
+				<ul>
+					@foreach (var error in serviceErrors)
+					{
+						<li>@error</li>
+					}
+				</ul>
+			</div>
+		}
+
+		<div class="mb-3">
+			<label for="eventMinute" class="form-label fw-bold">Minute</label>
+			<input type="number" @bind="eventMinute" class="form-control" />
+		</div>
+
+		<div class="mb-3">
+			<label for="eventDescription" class="form-label fw-bold">Description</label>
+			<input type="text" id="eventDescription" @bind="eventDescription" class="form-control" placeholder="Enter description" />
+		</div>
+
+		<div class="mb-3">
+			<label for="eventDetails" class="form-label fw-bold">Details</label>
+			<textarea id="eventDetails" @bind="eventDetails" class="form-control" placeholder="Enter details" rows="3"></textarea>
+		</div>
+
+		<div class="mb-3">
+			<label for="fileInput" class="form-label fw-bold">Upload File</label>
+			<InputFile id="fileInput" OnChange="HandleImageUpload" />
+			@if (!string.IsNullOrEmpty(previewImage))
+			{
+				<img src="@previewImage" alt="Preview" class="img-thumbnail mt-2" style="max-height: 200px;" />
+			}
+		</div>
+
+		<div class="text-center">
+			<button class="btn btn-warning text-dark" @onclick="HandleValidSubmit">
+				<img src="images/yellow-card.png" alt="Yellow Card" class="img-fluid" style="max-height: 20px;" />
+				Submit
+			</button>
+			<button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+		</div>
+	</div>
+</div>
+
+
+
+@code {
+	[Parameter] public EventCallback<ReportEventLog> SubmitLogCallback { get; set; }
+	[Parameter] public EventCallback OnClose { get; set; }
+	[Parameter] public int CurrentMinute { get; set; }
+
+	private List<string> serviceErrors = new();
+
+	private int eventMinute;
+	private string eventDescription = string.Empty;
+	private string eventDetails = string.Empty;
+	private string? previewImage;
+	private string? imagePath;
+	
+	private IBrowserFile? uploadedImage;
+	
+
+	private bool IsValidImageFile(IBrowserFile file)
+	{
+		var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+		var extension = Path.GetExtension(file.Name)?.ToLower();
+		return allowedExtensions.Contains(extension);
+	}
+
+	private async Task HandleImageUpload(InputFileChangeEventArgs e)
+	{
+		serviceErrors.Clear();
+
+		uploadedImage = e.File;
+
+		if (!IsValidImageFile(uploadedImage))
+		{
+			serviceErrors.Add("Invalid file type!");
+			return;
+		}
+	}
+
+	private async Task HandleValidSubmit()
+	{
+		serviceErrors.Clear();
+
+		if (uploadedImage != null && !IsValidImageFile(uploadedImage))
+		{
+			serviceErrors.Add("Invalid file type!");
+			return;
+		}
+
+		if (uploadedImage != null)
+		{
+			string fileName = await SaveImageAsync(uploadedImage);
+			imagePath = $"/game-images/{fileName}";
+		}
+
+		var log = new ReportEventLog
+			{
+				Minute = eventMinute,
+				Type = "Media",
+				Description = eventDescription,
+				Details = eventDetails,
+				ImagePath = imagePath
+			};
+
+		await SubmitLogCallback.InvokeAsync(log);
+		await OnClose.InvokeAsync();
+	}
+
+	private async Task<string> SaveImageAsync(IBrowserFile imageFile)
+	{
+
+		if (uploadedImage != null && !IsValidImageFile(uploadedImage))
+		{
+			serviceErrors.Add("Invalid file type!");
+		}
+
+		var imagesPath = Path.Combine("wwwroot", "game-images");
+
+		if (!Directory.Exists(imagesPath))
+		{
+			Directory.CreateDirectory(imagesPath);
+		}
+
+		var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.Name)}";
+		var filePath = Path.Combine("wwwroot", "game-images", fileName);
+
+		using var stream = new FileStream(filePath, FileMode.Create);
+		await imageFile.OpenReadStream().CopyToAsync(stream);
+		return fileName;
+	}
+
+	protected override void OnInitialized()
+	{
+		if (CurrentMinute != 0)
+			eventMinute = CurrentMinute;
+	}
+}
