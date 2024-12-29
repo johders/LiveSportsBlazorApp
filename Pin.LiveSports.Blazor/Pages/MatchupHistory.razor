@@ -50,6 +50,10 @@
                             var scores = matchup.ScoreSnapshots[log.Id.ToString()];
                             <GoalEvent Log="log" LiveMatchup="matchup" Scores="scores" />
                         }
+                        else if (log.Type == "Media")
+                        {
+                            <MediaEvent Description="@log.Description" Details="@log.Details" ImagePath="@log.ImagePath" />
+                        }
                         else
                         {
                             <ManualEvent Description="@log.Description" Details="@log.Details" />

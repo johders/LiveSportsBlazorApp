@@ -21,6 +21,12 @@ namespace Pin.LiveSports.Blazor
 
             var app = builder.Build();
 
+            var imagesPath = Path.Combine(app.Environment.WebRootPath, "game-images");
+            if (Directory.Exists(imagesPath))
+            {
+                Directory.Delete(imagesPath, true);
+            }
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {

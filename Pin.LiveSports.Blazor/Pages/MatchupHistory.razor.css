@@ -5,3 +5,19 @@
 .left-border-min {
     border-left: 4px dotted #83ff00;
 }
+
+.log-line {
+    position: relative;
+    z-index: -100;
+}
+
+    .log-line::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 40px;
+        width: 3px;
+        background-color: lightgray;
+        z-index: -100;
+    }

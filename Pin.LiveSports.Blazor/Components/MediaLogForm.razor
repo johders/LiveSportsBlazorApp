@@ -1,6 +1,6 @@
 ﻿<div class="card shadow-lg border-0 bg-light my-3 w-75 m-auto">
 
-	<div class="card-header bg-warning bg-opacity-75 text-white text-center">
+	<div class="card-header bg-primary bg-opacity-75 text-white text-center">
 		<h5 class="mb-0">Upload Media</h5>
 	</div>
 
@@ -43,8 +43,8 @@
 		</div>
 
 		<div class="text-center">
-			<button class="btn btn-warning text-dark" @onclick="HandleValidSubmit">
-				<img src="images/yellow-card.png" alt="Yellow Card" class="img-fluid" style="max-height: 20px;" />
+			<button class="btn btn-primary text-dark" @onclick="HandleValidSubmit">
+				<img src="images/camera.png" alt="Yellow Card" class="img-fluid" style="max-height: 20px;" />
 				Submit
 			</button>
 			<button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
@@ -88,6 +88,10 @@
 			serviceErrors.Add("Invalid file type!");
 			return;
 		}
+
+		var buffer = new byte[uploadedImage.Size];
+		await uploadedImage.OpenReadStream(maxAllowedSize: 4 * 1024 * 1024).ReadAsync(buffer);
+		previewImage = $"data:{uploadedImage.ContentType};base64,{Convert.ToBase64String(buffer)}";
 	}
 
 	private async Task HandleValidSubmit()
