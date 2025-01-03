@@ -215,8 +215,8 @@ OnCancel="CloseStopGameModal" />
 		gameTimerCts = new CancellationTokenSource();
 
 		while (!gameTimerCts.Token.IsCancellationRequested && matchup.CurrentMinute < 90)
-		{   //5333
-			await Task.Delay(1333, gameTimerCts.Token);
+		{   //5333 (FIFA Time)
+			await Task.Delay(2333, gameTimerCts.Token);
 			matchup.CurrentMinute++;
 
 			if (hubConnection is not null && IsConnected)
@@ -273,6 +273,10 @@ OnCancel="CloseStopGameModal" />
 
 				RefreshGame();
 			}
+
+			await Task.Delay(4000);
+			matchup = null;
+			await GenerateMatchup();
 		}
 	}
 
