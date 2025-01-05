@@ -2,7 +2,6 @@
 using Pin.LiveSports.Core.Models;
 using Pin.LiveSports.Core.Services.Interfaces;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace Pin.LiveSports.Core.Services
 {
