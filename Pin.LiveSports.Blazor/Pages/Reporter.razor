@@ -275,6 +275,10 @@ OnCancel="CloseStopGameModal" />
 
 				RefreshGame();
 			}
+
+			await Task.Delay(4000);
+			matchup = null;
+			await GenerateMatchup();
 		}
 	}
 
