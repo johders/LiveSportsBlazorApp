@@ -218,7 +218,7 @@ OnCancel="CloseStopGameModal" />
 
 		while (!gameTimerCts.Token.IsCancellationRequested && matchup.CurrentMinute < 90)
 		{   //5333
-			await Task.Delay(333, gameTimerCts.Token);
+			await Task.Delay(2333, gameTimerCts.Token);
 
 			if (matchup.CurrentMinute == 45)
 			{
