@@ -17,5 +17,6 @@ namespace Pin.LiveSports.Core.Services.Interfaces
         void StartGame();
         List<Matchup> GetTodaysGames();
         void AddToHistory(Matchup matchup);
+        void AddMinute();
     }
 }

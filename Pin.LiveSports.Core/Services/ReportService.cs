@@ -21,6 +21,11 @@ namespace Pin.LiveSports.Core.Services
             return _matchup;
         }
 
+        public void AddMinute()
+        {
+            _matchup.CurrentMinute++;
+        }
+
         public void StartGame()
         {
             _matchup.HasStarted = true;

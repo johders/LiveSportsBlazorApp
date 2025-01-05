@@ -18,9 +18,10 @@ namespace Pin.LiveSports.Blazor.Hubs
             _reportService.SetMatchup(matchup);
             await Clients.Others.SendAsync("ReceiveMatchup", matchup);
         }
-        public async Task BroadcastMinute(int currentMinute)
+        public async Task BroadcastMinute()
         {
-            await Clients.Others.SendAsync("UpdateMinute", currentMinute);
+            _reportService.AddMinute();
+            await Clients.Others.SendAsync("UpdateMinute", _reportService.GetMatchup().CurrentMinute);
         }
         public async Task SendEventLog(ReportEventLog eventLog)
         {
