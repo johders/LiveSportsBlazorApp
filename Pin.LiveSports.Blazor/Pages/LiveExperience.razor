@@ -1,0 +1,209 @@
+﻿@page "/live"
+
+@inject NavigationManager Navigation
+@inject ICompetitionService CompetitionService
+@inject IReportService ReportService
+
+@implements IAsyncDisposable
+
+<PageTitle>World Cup Live</PageTitle>
+
+@if (liveMatchup != null)
+{
+	<MatchupDisplay Matchup="liveMatchup" />
+
+	<GoalSummary Matchup="liveMatchup" />
+
+	<h2 class="left-border fw-bold my-0">&nbsp;Step by step</h2>
+	if (liveMatchup.EventLogs.Count > 0 && string.IsNullOrEmpty(endDateTime))
+	{
+		<p class="left-border-min">&nbsp; last update @minutesSinceLastUpdate minutes ago</p>
+	}
+	else if (!string.IsNullOrEmpty(endDateTime))
+	{
+		<p class="left-border-min">&nbsp; game ended on @endDateTime</p>
+	}
+	<div class="container d-flex flex-column w-100">
+		@foreach (var log in liveMatchup?.EventLogs ?? Enumerable.Empty<ReportEventLog>())
+		{
+			@if(log.Type == "Kickoff")
+			{
+				<TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+			}
+			else if (log.Type == "HalftimeStart")
+			{
+				<TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+			}
+			else if (log.Type == "HalftimeEnd")
+			{
+				<TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+			}
+			else if (log.Type == "Fulltime")
+			{
+				<TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+			}
+			else
+			{
+				<div class="row align-items-start mb-4 w-100 log-line">
+
+					<TimeComponent Minute="@log.Minute" />
+
+					<div class="col-10 d-flex flex-column">
+						@if (log.Type.Contains("Card"))
+						{
+							<CardEvent CardType="@log.Type" Player="@log.Player" Team="@log.Team" />
+						}
+						else if (log.Type == "Substitution")
+						{
+							<SubstitutionEvent PlayerOut="@log.PlayerOut" PlayerIn="@log.PlayerIn" Team="@log.Team" />
+						}
+						else if (log.Type == "Goal")
+						{
+							var scores = liveMatchup.ScoreSnapshots[log.Id.ToString()];
+							<GoalEvent Log="log" LiveMatchup="liveMatchup" Scores="scores" />
+						}
+						else if (log.Type == "Media")
+						{
+							<MediaEvent Description="@log.Description" Details="@log.Details" ImagePath="@log.ImagePath" />
+						}
+						else
+						{
+							<ManualEvent Description="@log.Description" Details="@log.Details" />
+						}
+					</div>
+				</div>
+			}			
+		}
+	</div>
+}
+else
+{
+	<div class="d-flex vh-100 flex-column justify-content-center align-items-center text-center">
+		@if (competition?.Emblem != null)
+		{
+			<CompetitionEmblem Competition="competition" />
+		}
+
+		<LoadingSpinner/>
+
+		<h3 class="text-muted">Waiting for the next game...</h3>
+	</div>
+}
+
+@code {
+	private HubConnection? hubConnection;
+	private Matchup? liveMatchup;
+	private Competition? competition;
+	private int minutesSinceLastUpdate = 0;
+	private string endDateTime = string.Empty;
+
+	private Dictionary<ReportEventLog, (int TeamAScore, int TeamBScore)> scoreSnapshots = new();
+
+	private void SnapshotScores()
+	{
+		foreach (var log in liveMatchup.EventLogs.Where(l => l.Type == "Goal"))
+		{
+			if (!scoreSnapshots.ContainsKey(log))
+			{
+				scoreSnapshots[log] = (liveMatchup.TeamAScore, liveMatchup.TeamBScore);
+			}
+		}
+	}
+
+	private async Task GetCompetition()
+	{
+		var competitionResult = await CompetitionService.GetCompetitionAsync();
+
+		if (competitionResult.Success)
+		{
+			competition = competitionResult.Data;
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		hubConnection = new HubConnectionBuilder()
+			.WithUrl(Navigation.ToAbsoluteUri(AppConstants.HubUrl))
+			.Build();
+
+		hubConnection.On<int>("UpdateMinute", (minute) =>
+		{
+			if (liveMatchup is not null)
+			{
+				liveMatchup.CurrentMinute = minute;
+				if (liveMatchup.EventLogs.Count > 0)
+				{
+					minutesSinceLastUpdate = minute - liveMatchup.EventLogs.First().Minute;
+				}
+				InvokeAsync(StateHasChanged);
+			}
+		});
+
+		hubConnection.On<Matchup>("ReceiveMatchup", (matchup) =>
+		{
+			liveMatchup = ReportService.GetMatchup();
+			InvokeAsync(StateHasChanged);
+		});
+
+		hubConnection.On<ReportEventLog>("ReceiveStartGame", (ReportEventLog) =>
+		{
+			liveMatchup = ReportService.GetMatchup();
+			InvokeAsync(StateHasChanged);
+		});
+
+		hubConnection.On<ReportEventLog>("ReceiveEventLog", (eventLog) =>
+		{
+			if (liveMatchup is not null)
+			{
+				liveMatchup = ReportService.GetMatchup();
+				IsGameOverCheck();
+
+				if (eventLog.Type == "Fullime")
+				{
+					endDateTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+					liveMatchup.HasFinished = true;
+					liveMatchup.HasStarted = false;
+				}
+
+				InvokeAsync(StateHasChanged);
+			}
+		});
+
+		await hubConnection.StartAsync();
+
+		await CheckForLiveGame();
+		await GetCompetition();
+	}
+
+
+	private async Task CheckForLiveGame()
+	{
+		var activeMatchup = await hubConnection.InvokeAsync<Matchup?>("CheckLiveGame");
+
+		if (activeMatchup is not null && activeMatchup.IsLive)
+		{
+			liveMatchup = activeMatchup;
+			SnapshotScores();
+			StateHasChanged();
+		}
+	}
+
+	private void IsGameOverCheck()
+	{
+		if (liveMatchup?.EventLogs.Any(e => e.Type == "Stop") == true)
+		{
+			endDateTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+			liveMatchup.HasFinished = true;
+			liveMatchup.HasStarted = false;
+			InvokeAsync(StateHasChanged);
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (hubConnection is not null)
+		{
+			await hubConnection.DisposeAsync();
+		}
+	}
+}

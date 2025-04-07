@@ -1,0 +1,32 @@
+﻿.blink {
+    animation: blink-animation 0.5s ease-in-out;
+    color: #83ff00;
+}
+
+.details {
+    background-color: black;
+    color: white;
+}
+
+    .details:hover {
+        background-color: #83ff00;
+        color: black;
+    }
+
+.team-underline {
+    border-bottom: 3px solid #83ff00;
+}
+
+@keyframes blink-animation {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

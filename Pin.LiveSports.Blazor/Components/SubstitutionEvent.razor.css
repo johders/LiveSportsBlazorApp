@@ -1,0 +1,31 @@
+﻿.player-highlight {
+    border-bottom: 3px solid #83ff00;
+}
+
+.substitution-event {
+    position: relative;
+}
+
+.arrow-icon {
+    width: 24px;
+    height: auto;
+}
+
+.vertical-line {
+    position: relative;
+    min-height: 100%;
+    width: 2px;
+    color: lightgray;
+    height: 40px;
+    margin: 0.5rem 0;
+}
+
+    .vertical-line::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        min-height: 100%;
+        width: 2px;
+        background-color: lightgrey;
+    }

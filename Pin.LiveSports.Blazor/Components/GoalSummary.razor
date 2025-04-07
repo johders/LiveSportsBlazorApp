@@ -1,0 +1,71 @@
+﻿@if (GoalEvents.Any())
+{
+    <div>
+        <table class="table table-striped table-borderless rounded shadow">
+            <tbody>
+
+                @{
+                    int teamAScore = 0;
+                    int teamBScore = 0;
+                }
+
+                @foreach (var goal in GoalEvents)
+                {
+                    if (goal.Team == Matchup.TeamA.Name)
+                    {
+                        teamAScore++;
+                    }
+                    else if (goal.Team == Matchup.TeamB.Name)
+                    {
+                        teamBScore++;
+                    }
+
+                    <tr>
+                        <td class="text-start @(goal.Team == Matchup.TeamA.Name ? "" : "invisible-cell")">
+                            @goal.Minute'
+                        </td>
+                        <td class="text-start @(goal.Team == Matchup.TeamA.Name ? "" : "invisible-cell")">
+                            @if (goal.Team == Matchup.TeamA.Name)
+                            {
+                                <img src="images/goal.png" alt="Goal" class="img-fluid" style="max-height: 30px;" />
+                            }
+                            else
+                            {
+                                <p>N/A</p>
+                            }
+                        </td>
+                        <td class="text-start @(goal.Team == Matchup.TeamA.Name ? "" : "invisible-cell")">
+                            @goal.Player
+                        </td>
+
+                        <td class="text-center fw-bold">@teamAScore - @teamBScore</td>
+
+                        <td class="text-end @(goal.Team == Matchup.TeamB.Name ? "" : "invisible-cell")">
+                            @goal.Player
+                        </td>
+                        <td class="text-end @(goal.Team == Matchup.TeamB.Name ? "" : "invisible-cell")">
+                            @if (goal.Team == Matchup.TeamB.Name)
+                            {
+                                <img src="images/goal.png" alt="Goal" class="img-fluid" style="max-height: 30px;" />
+                            }
+                            else
+                            {
+                                <p>N/A</p>
+                            }
+                        </td>
+                        <td class="text-end @(goal.Team == Matchup.TeamB.Name ? "" : "invisible-cell")">
+                            @goal.Minute'
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Matchup Matchup { get; set; } = new();
+
+    private IEnumerable<ReportEventLog> GoalEvents => Matchup.EventLogs.Where(e => e.Type == "Goal").Reverse();
+}

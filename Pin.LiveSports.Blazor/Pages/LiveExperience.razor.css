@@ -1,0 +1,45 @@
+﻿.row {
+    height: 100%;
+}
+
+.manual-event {
+    background-color: white;
+    color: black;
+    border-radius: 5px;
+}
+
+.player-highlight {
+    border-bottom: 3px solid #83ff00;
+}
+
+.left-border {
+    border-left: 4px solid #83ff00;
+}
+
+.left-border-min {
+    border-left: 4px dotted #83ff00;
+}
+
+.log-line {
+    position: relative;
+    z-index: -100;
+}
+
+    .log-line::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 40px;
+        width: 3px;
+        background-color: lightgray;
+        z-index: -100;
+    }
+
+.bottom-0 {
+    bottom: 0;
+}
+
+.start-0 {
+    left: 0;
+}

@@ -1,9 +1,42 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@inject NavigationManager Navigation
+@inject ICompetitionService CompetitionService
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<PageTitle>Home</PageTitle>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<div class="container-fluid vh-100 d-flex flex-column justify-content-center align-items-center text-center">
+	@if (competition?.Emblem != null)
+	{
+		<div class="mb-4">
+			<img src="@competition.Emblem" alt="Competition Emblem" class="img-fluid" style="max-height: 200px;">
+		</div>
+	}
+	<div class="d-flex justify-content-center gap-3">
+		<a href="reporter" class="btn btn-secondary btn-lg">Report</a>
+		<a href="live" class="btn btn-primary btn-lg">Live</a>
+	</div>
+</div>
+
+@code{
+	private Competition? competition;
+
+	private async Task GetCompetition()
+	{
+		var competitionResult = await CompetitionService.GetCompetitionAsync();
+
+		if (competitionResult.Success)
+		{
+			competition = competitionResult.Data;
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await GetCompetition();
+	}
+}
+
+
+

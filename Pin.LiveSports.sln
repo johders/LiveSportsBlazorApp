@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pin.LiveSports.Blazor", "Pi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pin.LiveSports.Core", "Pin.LiveSports.Core\Pin.LiveSports.Core.csproj", "{F778AF88-0DB8-49B5-AD61-10A906C6538A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pin.NewInDotNet.Console", "Pin.NewInDotNet.Console\Pin.NewInDotNet.Console.csproj", "{934C4E28-4C0D-48DC-AEEA-AF137522BFD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F778AF88-0DB8-49B5-AD61-10A906C6538A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F778AF88-0DB8-49B5-AD61-10A906C6538A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F778AF88-0DB8-49B5-AD61-10A906C6538A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{934C4E28-4C0D-48DC-AEEA-AF137522BFD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{934C4E28-4C0D-48DC-AEEA-AF137522BFD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{934C4E28-4C0D-48DC-AEEA-AF137522BFD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{934C4E28-4C0D-48DC-AEEA-AF137522BFD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

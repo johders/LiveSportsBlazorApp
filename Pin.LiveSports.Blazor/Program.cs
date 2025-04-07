@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Pin.LiveSports.Blazor.Data;
+using Pin.LiveSports.Blazor.Constants;
+using Pin.LiveSports.Blazor.Hubs;
+using Pin.LiveSports.Core.Services;
+using Pin.LiveSports.Core.Services.Interfaces;
 
 namespace Pin.LiveSports.Blazor
 {
@@ -13,9 +14,18 @@ namespace Pin.LiveSports.Blazor
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
-            builder.Services.AddSingleton<WeatherForecastService>();
+
+            builder.Services.AddSingleton<IReportService, ReportService>();
+            builder.Services.AddSingleton<ICompetitionService, CompetitionService>();
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
+
+            var imagesPath = Path.Combine(app.Environment.WebRootPath, "game-images");
+            if (Directory.Exists(imagesPath))
+            {
+                Directory.Delete(imagesPath, true);
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -33,6 +43,7 @@ namespace Pin.LiveSports.Blazor
 
             app.MapBlazorHub();
             app.MapFallbackToPage("/_Host");
+            app.MapHub<LiveReportHub>(AppConstants.HubUrl);
 
             app.Run();
         }

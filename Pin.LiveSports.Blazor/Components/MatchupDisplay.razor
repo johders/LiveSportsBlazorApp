@@ -1,0 +1,158 @@
+﻿<div class="row text-center border w-100 m-auto bg-opacity-10 bg-secondary rounded-3 my-3">
+
+    <div class="col-5 p-3 my-4">
+        <img src="@Matchup.TeamA.Crest"
+             alt="@Matchup.TeamA.Name Crest"
+             class="img-fluid mb-2 mx-auto d-block"
+             style="max-height: 100px;" />
+        <h4><span class ="team-underline">@Matchup.TeamA.Name</span></h4>
+        <button class="btn btn-primary mt-3 details rounded-pill" @onclick="() => ShowLineup(Matchup.TeamA, Matchup.TeamA.Name)">
+            View Lineup
+        </button>
+    </div>
+
+    <div class="col-2 d-flex align-items-center justify-content-center my-4">
+        <div class="d-flex flex-column align-items-center">
+            @if(Matchup.HasStarted)
+            {
+                <h5 class="@currentMinuteClass mb-2 fw-bold h4">@Matchup.CurrentMinute'</h5>
+            }
+            else if(Matchup.HasFinished){
+                <p class="@currentMinuteClass mb-2 text-muted">game over</p>
+            }
+            else if (!Matchup.HasStarted && !string.IsNullOrEmpty(Matchup.StartTime)){
+                <p class="@currentMinuteClass mb-2 text-muted">kickoff @Matchup.StartTime</p>
+            }
+            <p class="h1 fw-bold mb-0">@Matchup.TeamAScore - @Matchup.TeamBScore</p>
+        </div>
+    </div>
+
+    <div class="col-5 p-3 my-4">
+        <img src="@Matchup.TeamB.Crest"
+             alt="@Matchup.TeamB.Name Crest"
+             class="img-fluid mb-2 mx-auto d-block"
+             style="max-height: 100px;" />
+        <h4><span class="team-underline">@Matchup.TeamB.Name</span></h4>
+        <button class="btn btn-primary mt-3 details rounded-pill" @onclick="() => ShowLineup(Matchup.TeamB, Matchup.TeamB.Name)">
+            View Lineup
+        </button>
+    </div>
+</div>
+
+@if (isModalOpen)
+{
+    <div class="modal show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@currentTeamName</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Status</th>
+                                <th>Events</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var player in currentTeam?.Squad.OrderByDescending(p => p.IsPlaying))
+                            {
+                                <tr>
+                                    <td>@player.Name</td>
+                                    <td>@player.Position</td>
+                                    <td>
+                                        @if (player.IsPlaying)
+                                        {
+                                            <span class="badge bg-success">Playing</span>
+                                        }
+                                        else if (player.IsDisqualified)
+                                        {
+                                            <span class="badge bg-danger">Disqualified</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Benched</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @for (int i = 0; i < player.GoalCount; i++)
+                                        {
+                                            <img src="images/goal.png" alt="Goal" title="Goal" style="height: 20px; width: 20px;" />
+                                        }
+                                        @for (int i = 0; i < player.YellowCardCount; i++)
+                                        {
+                                            <img src="images/yellow-card.png" alt="Yellow Card" title="Yellow Card" style="height: 20px; width: 20px;" />
+                                        }
+                                        @for (int i = 0; i < player.RedCardCount; i++)
+                                        {
+                                            <img src="images/red-card.png" alt="Red Card" title="Red Card" style="height: 20px; width: 20px;" />
+                                        }
+                                        @for (int i = 0; i < player.SubbedInCount; i++)
+                                        {
+                                            <img src="images/in-arrow.png" alt="Subbed In" title="Subbed In" style="height: 20px; width: 20px;" />
+                                        }
+                                        @for (int i = 0; i < player.SubbedOutCount; i++)
+                                        {
+                                            <img src="images/out-arrow.png" alt="Subbed Out" title="Subbed Out" style="height: 20px; width: 20px;" />
+                                        }
+
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public Matchup Matchup { get; set; }
+    private string currentMinuteClass = "";
+
+    private bool isModalOpen = false;
+    private Team? currentTeam;
+    private string? currentTeamName;
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(currentMinuteClass))
+        {
+            return;
+        }
+
+        currentMinuteClass = "blink";
+        _ = ResetBlinkClassAsync();
+    }
+
+    private async Task ResetBlinkClassAsync()
+    {
+        await Task.Delay(300);
+        currentMinuteClass = "";
+        StateHasChanged();
+    }
+
+    private void ShowLineup(Team team, string teamName)
+    {
+        currentTeam = team;
+        currentTeamName = teamName;
+        isModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalOpen = false;
+        currentTeam = null;
+        currentTeamName = null;
+    }
+}

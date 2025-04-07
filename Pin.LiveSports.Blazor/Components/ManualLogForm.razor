@@ -1,0 +1,56 @@
+﻿<div class="card shadow-lg border-0 bg-light my-3 w-75 m-auto">
+	<div class="card-header bg-secondary bg-opacity-75 text-white text-center">
+		<h5 class="mb-0">Manual Event Log</h5>
+	</div>
+	<div class="card-body">
+		<div class="mb-3">
+			<label for="eventMinute" class="form-label fw-bold">Minute</label>
+			<input type="number" id="eventMinute" @bind="eventMinute" class="form-control" placeholder="Enter minute" />
+		</div>
+
+		<div class="mb-3">
+			<label for="eventDescription" class="form-label fw-bold">Description</label>
+			<input type="text" id="eventDescription" @bind="eventDescription" class="form-control" placeholder="Enter description" />
+		</div>
+
+		<div class="mb-3">
+			<label for="eventDetails" class="form-label fw-bold">Details</label>
+			<textarea id="eventDetails" @bind="eventDetails" class="form-control" placeholder="Enter details" rows="3"></textarea>
+		</div>
+
+		<div class="text-center">
+			<button class="btn btn-info me-2" @onclick="SubmitLog">Submit</button>
+			<button class="btn btn-secondary" @onclick="OnClose">Close</button>
+		</div>
+	</div>
+</div>
+@code {
+	[Parameter] public EventCallback<ReportEventLog> SubmitLogCallback { get; set; }
+	[Parameter] public EventCallback OnClose { get; set; }
+	[Parameter] public int CurrentMinute { get; set; }
+
+	private int eventMinute;
+	private string eventDescription = string.Empty;
+	private string eventDetails = string.Empty;
+
+	private async Task SubmitLog()
+	{
+		var log = new ReportEventLog
+			{
+				Minute = eventMinute,
+				Type = "Manual",
+				Description = eventDescription,
+				Details = eventDetails,
+			};
+
+		await SubmitLogCallback.InvokeAsync(log);
+
+		await OnClose.InvokeAsync();
+	}
+
+	protected override void OnInitialized()
+	{
+		if (CurrentMinute != 0)
+			eventMinute = CurrentMinute;
+	}
+}

@@ -1,0 +1,348 @@
+﻿@page "/reporter"
+
+@inject NavigationManager Navigation
+@inject IReportService ReportService
+@inject ICompetitionService CompetitionService
+
+<PageTitle>Report</PageTitle>
+
+@if (matchup != null && matchup.StartTime != null)
+{
+	<ActionButton ButtonText="Start Game"
+	ButtonClass="btn-primary"
+	OnClick="StartGame"
+	IsDisabled="@isGameRunning" />
+
+	<ActionButton ButtonText="Stop Game"
+	ButtonClass="btn-danger"
+	OnClick="ShowStopGameModal"
+	IsDisabled="@IsStopGameDisabled" />
+
+	<MatchupDisplay Matchup="matchup" />
+	<GoalSummary Matchup="matchup" />
+
+}
+else if (matchup != null)
+{
+	<div class="d-flex vh-100 flex-column justify-content-center align-items-center text-center">
+		@if (competition?.Emblem != null)
+		{
+			<CompetitionEmblem Competition="competition" />
+		}
+
+		<MatchupPreview Matchup="matchup" />
+
+		<div class="d-flex flex-column align-items-center mb-3">
+			<label for="startTime" class="form-label fw-bold text-center">Set Start Time</label>
+			<input type="time" id="startTime" @onchange="HandleStartTimeChange" class="form-control w-auto" style="max-width: 200px;" />
+		</div>
+
+		<ActionButton ButtonText="Report Game"
+		ButtonClass="btn-success"
+		OnClick="SetTime"
+		IsDisabled="isReportButtonDisabled" />
+	</div>
+}
+
+@if (isGameRunning)
+{
+	<ReporterDashboard OnLogTypeSelected="HandleLogTypeSelected" />
+
+	@if (selectedLogType == "Manual")
+	{
+		<ManualLogForm CurrentMinute="matchup.CurrentMinute" SubmitLogCallback="SubmitManualLog" OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "YellowCard")
+	{
+		<YellowCardLogForm Matchup="matchup" SubmitLogCallback="SubmitYellowCardLog" OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "RedCard")
+	{
+		<RedCardLogForm Matchup="matchup" SubmitLogCallback="SubmitRedCardLog" OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "Substitution")
+	{
+		<SubstitutionLogForm Matchup="matchup" SubmitLogCallback="SubmitSubstitutionLog" OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "Goal")
+	{
+		<GoalLogForm Matchup="matchup" SubmitLogCallback="SubmitGoalLog" OnClose="CloseLogForm" />
+	}
+	else if (selectedLogType == "Media")
+	{
+		<MediaLogForm CurrentMinute="matchup.CurrentMinute" SubmitLogCallback="SubmitManualLog" OnClose="CloseLogForm" />
+	}
+}
+
+<ConfirmationModal @ref="stopGameModal"
+Title="Confirm Stop Game"
+Message="Are you sure you want to stop the game?"
+ConfirmButtonText="Stop Game"
+CancelButtonText="Cancel"
+OnConfirm="StopGame"
+OnCancel="CloseStopGameModal" />
+
+
+@code {
+	private HubConnection? hubConnection;
+
+	private Matchup? matchup;
+	private Competition? competition;
+	private string? selectedLogType;
+	private ConfirmationModal? stopGameModal;
+
+	private bool isGameRunning = false;
+	private bool IsStopGameDisabled => !isGameRunning;
+	private CancellationTokenSource? gameTimerCts;
+
+	private bool isReportButtonDisabled = true;
+	private string? startTime;
+
+	private async Task GetCompetition()
+	{
+		var competitionResult = await CompetitionService.GetCompetitionAsync();
+
+		if (competitionResult.Success)
+		{
+			competition = competitionResult.Data;
+		}
+	}
+
+	private void HandleStartTimeChange(ChangeEventArgs e)
+	{
+		string timeString = e.Value?.ToString();
+		DateTime time = DateTime.Parse(timeString);
+		string formattedTime = time.ToString("HH:mm");
+
+		startTime = formattedTime;
+		isReportButtonDisabled = string.IsNullOrEmpty(startTime);
+	}
+
+	private async Task SetTime()
+	{
+		if (startTime == null)
+		{
+			startTime = DateTime.Now.AddMinutes(15).ToShortTimeString();
+		}
+
+		matchup.StartTime = startTime;
+
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendMatchup", matchup);
+		}
+	}
+
+	private async Task GenerateMatchup()
+	{
+		var matchupResult = await CompetitionService.GenerateMatchupAsync();
+
+		if (matchupResult.Success)
+		{
+			matchup = matchupResult.Data;
+			matchup.CurrentMinute = 0;
+			isGameRunning = false;
+		}
+	}
+
+	private async Task SubmitManualLog(ReportEventLog log)
+	{
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendEventLog", log);
+			RefreshGame();
+		}
+	}
+
+	private async Task SubmitYellowCardLog(ReportEventLog log)
+	{
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendYellowCardLog", log);
+			RefreshGame();
+		}
+	}
+
+	private async Task SubmitRedCardLog(ReportEventLog log)
+	{
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendRedCardLog", log);
+			RefreshGame();
+		}
+	}
+
+	private async Task SubmitSubstitutionLog(ReportEventLog log)
+	{
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendSubstitutionLog", log);
+			RefreshGame();
+		}
+	}
+
+	private async Task SubmitGoalLog(ReportEventLog log)
+	{
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("SendGoalLog", log);
+			RefreshGame();
+		}
+	}
+
+	private void RefreshGame()
+	{
+		matchup = ReportService.GetMatchup();
+	}
+
+	private async Task StartGame()
+	{
+		if (isGameRunning || matchup == null) return;
+
+		isGameRunning = true;
+
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("StartGame", new ReportEventLog
+				{
+					Type = "Kickoff",
+					Description = "Kickoff",
+					Details = $"Game started on {DateTime.Now.ToShortDateString()} - {matchup.StartTime}"
+				});
+
+			RefreshGame();
+			StateHasChanged();
+		}
+
+		gameTimerCts = new CancellationTokenSource();
+
+		while (!gameTimerCts.Token.IsCancellationRequested && matchup.CurrentMinute < 90)
+		{   //5333
+			await Task.Delay(2333, gameTimerCts.Token);
+
+			if (matchup.CurrentMinute == 45)
+			{
+				if (hubConnection is not null && IsConnected)
+				{
+					await hubConnection.SendAsync("SendGameMarker", new ReportEventLog
+						{
+							Type = "HalftimeStart",
+							Description = "End of first half",
+							Minute = matchup.CurrentMinute,
+							Details = $"Half time: {DateTime.Now.ToShortDateString()} - {matchup.StartTime}"
+						});
+
+					RefreshGame();
+				}
+			}
+
+			if (matchup.CurrentMinute == 46)
+			{
+				if (hubConnection is not null && IsConnected)
+				{
+					await hubConnection.SendAsync("SendGameMarker", new ReportEventLog
+						{
+							Type = "HalftimeEnd",
+							Description = "Start of second half",
+							Minute = matchup.CurrentMinute,
+							Details = $"Second half started: {DateTime.Now.ToShortDateString()} - {matchup.StartTime}"
+						});
+
+					RefreshGame();
+				}
+			}
+
+			if (hubConnection is not null && IsConnected)
+			{
+				await hubConnection.SendAsync("BroadcastMinute");
+				RefreshGame();
+			}
+
+			StateHasChanged();
+		}
+
+		if (matchup.CurrentMinute == 90)
+		{
+
+			if (hubConnection is not null && IsConnected)
+			{
+				await hubConnection.SendAsync("SendGameMarker", new ReportEventLog
+					{
+						Type = "Fulltime",
+						Description = "Game ended",
+						Minute = matchup.CurrentMinute,
+						Details = $"Game ended: {DateTime.Now.ToShortDateString()} - {matchup.StartTime}"
+					});
+
+				RefreshGame();
+			}
+
+			await Task.Delay(3000);
+			matchup = null;
+			await GenerateMatchup();
+		}
+	}
+
+	private void ShowStopGameModal()
+	{
+		stopGameModal?.Show();
+	}
+
+	private void CloseStopGameModal()
+	{
+		stopGameModal?.Hide();
+	}
+
+	private async Task StopGame()
+	{
+		gameTimerCts?.Cancel();
+		isGameRunning = false;
+
+		if (hubConnection is not null && IsConnected)
+		{
+			await hubConnection.SendAsync("StopGame", matchup, new ReportEventLog
+				{
+					Type = "Stop",
+					Description = "Game ended",
+					Details = "Game ended prematurely due to human rights violations",
+					Minute = matchup.CurrentMinute
+				});
+		}
+
+		matchup = null;
+		CloseStopGameModal();
+		await GenerateMatchup();
+	}
+
+	private void HandleLogTypeSelected(string logType)
+	{
+		selectedLogType = logType;
+	}
+
+	private void CloseLogForm()
+	{
+		selectedLogType = null;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		hubConnection = new HubConnectionBuilder()
+			.WithUrl(Navigation.ToAbsoluteUri(AppConstants.HubUrl))
+			.Build();
+
+		await hubConnection.StartAsync();
+		await GetCompetition();
+		await GenerateMatchup();
+	}
+
+	public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+	public async ValueTask DisposeAsync()
+	{
+		if (hubConnection is not null)
+		{
+			await hubConnection.DisposeAsync();
+		}
+	}
+}

@@ -1,0 +1,78 @@
+﻿@page "/history/{matchupId:int}"
+@inject IReportService ReportService
+
+<PageTitle>Matchup History</PageTitle>
+
+@if (matchup != null)
+{
+    <MatchupDisplay Matchup="matchup" />
+
+    <GoalSummary Matchup="matchup" />
+
+    <h2 class="left-border fw-bold my-0">&nbsp;Step by step</h2>
+    <p class="left-border-min">&nbsp; Game ended on @matchup.EndTime</p>
+
+    <div class="container d-flex flex-column w-100">
+        @foreach (var log in matchup.EventLogs)
+        {
+            @if (log.Type == "Kickoff")
+            {
+                <TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+            }
+            else if (log.Type == "HalftimeStart")
+            {
+                <TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+            }
+            else if (log.Type == "HalftimeEnd")
+            {
+                <TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+            }
+            else if (log.Type == "Fulltime")
+            {
+                <TimeIndicator LogType="@log.Type" Minute="@log.Minute" />
+            }
+            else
+            {
+                <div class="row align-items-start mb-4 w-100 log-line">
+                    <TimeComponent Minute="@log.Minute"/>
+
+                    <div class="col-10 d-flex flex-column">
+                        @if (log.Type.Contains("Card"))
+                        {
+                            <CardEvent CardType="@log.Type" Player="@log.Player" Team="@log.Team" />
+                        }
+                        else if (log.Type == "Substitution")
+                        {
+                            <SubstitutionEvent PlayerOut="@log.PlayerOut" PlayerIn="@log.PlayerIn" Team="@log.Team" />
+                        }
+                        else if (log.Type == "Goal")
+                        {
+                            var scores = matchup.ScoreSnapshots[log.Id.ToString()];
+                            <GoalEvent Log="log" LiveMatchup="matchup" Scores="scores" />
+                        }
+                        else if (log.Type == "Media")
+                        {
+                            <MediaEvent Description="@log.Description" Details="@log.Details" ImagePath="@log.ImagePath" />
+                        }
+                        else
+                        {
+                            <ManualEvent Description="@log.Description" Details="@log.Details" />
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}
+
+@code {
+    private Matchup? matchup;
+
+    [Parameter]
+    public int MatchupId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        matchup = ReportService.GetTodaysGames().FirstOrDefault(m => m.Id == MatchupId);
+    }
+}

@@ -1,0 +1,124 @@
+﻿<div class="card shadow-lg border-0 bg-light my-3 w-75 m-auto">
+	<div class="card-header bg-success bg-opacity-75 text-white text-center">
+		<h5 class="mb-0">Substitution</h5>
+	</div>
+	<div class="card-body">
+
+		<div class="mb-3">
+			<label for="eventMinute" class="form-label fw-bold">Minute</label>
+			<input type="number" @bind="eventMinute" class="form-control" />
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label fw-bold">Team</label>
+			<select @onchange="HandleTeamSelection" class="form-control">
+				<option value="" disabled selected>Select a team</option>
+				@if (Matchup != null)
+				{
+					<option value="@Matchup.TeamA.Name">@Matchup.TeamA.Name</option>
+					<option value="@Matchup.TeamB.Name">@Matchup.TeamB.Name</option>
+				}
+			</select>
+		</div>
+
+		@if (!string.IsNullOrEmpty(selectedTeam))
+		{
+			<div class="mb-3">
+				<label class="form-label fw-bold">Player Out</label>
+				<select @bind="playerOut" class="form-control">
+					<option value="" disabled selected>Select a player</option>
+
+					@foreach (var player in playersOut)
+					{
+						<option value="@player.Name">@player.Name</option>
+					}
+				</select>
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label fw-bold">Player In</label>
+				<select @bind="playerIn" class="form-control">
+					<option value="" disabled selected>Select a player</option>
+					@foreach (var player in playersIn)
+					{
+						<option value="@player.Name">@player.Name</option>
+					}
+				</select>
+			</div>
+		}
+
+		<div class="text-center">
+			<button class="btn btn-success text-white" @onclick="SubmitSubstitutionLog">
+				<img src="images/substitution.png" alt="Substitution" class="img-fluid" style="max-height: 20px;" />
+				Submit
+			</button>
+			<button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter] public Matchup? Matchup { get; set; }
+	[Parameter] public EventCallback<ReportEventLog> SubmitLogCallback { get; set; }
+	[Parameter] public EventCallback OnClose { get; set; }
+
+	private string? selectedTeam;
+	private string? playerIn;
+	private string? playerOut;
+	private int eventMinute;
+	private List<Player> playersIn = new();
+	private List<Player> playersOut = new();
+
+	private void HandleTeamSelection(ChangeEventArgs e)
+	{
+		selectedTeam = e.Value?.ToString();
+		LoadPlayers();
+	}
+
+	private void LoadPlayers()
+	{
+		if (selectedTeam == Matchup?.TeamA.Name)
+		{
+			playersOut = Matchup.TeamA.Squad.Where(p => p.IsPlaying && !p.IsDisqualified).ToList();
+			playersIn = Matchup.TeamA.Squad.Where(p => !p.IsPlaying).ToList();
+		}
+		else if (selectedTeam == Matchup?.TeamB.Name)
+		{
+			playersOut = Matchup.TeamB.Squad.Where(p => p.IsPlaying && !p.IsDisqualified).ToList();
+			playersIn = Matchup.TeamB.Squad.Where(p => !p.IsPlaying).ToList();
+		}
+		else
+		{
+			playersOut = new List<Player>();
+			playersIn = new List<Player>();
+		}
+	}
+
+	private async Task SubmitSubstitutionLog()
+	{
+		if (string.IsNullOrEmpty(selectedTeam) || string.IsNullOrEmpty(playerIn) || string.IsNullOrEmpty(playerOut))
+			return;
+
+		var log = new ReportEventLog
+			{
+				Minute = eventMinute,
+				Type = "Substitution",
+				Team = selectedTeam,
+				PlayerIn = playerIn,
+				PlayerOut = playerOut,
+				Description = $"Substitution: {playerIn} replaced {playerOut}.",
+				Details = $"{playerIn} was subbed in for {playerOut} at minute {eventMinute}.",
+			};
+
+		await SubmitLogCallback.InvokeAsync(log);
+		LoadPlayers();
+		await OnClose.InvokeAsync();
+	}
+
+	protected override void OnInitialized()
+	{
+		if (Matchup != null)
+			eventMinute = Matchup.CurrentMinute;
+	}
+
+}

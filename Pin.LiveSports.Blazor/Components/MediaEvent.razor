@@ -1,0 +1,22 @@
+﻿<div class="manual-event ps-2">
+    <h5>@Description</h5>
+    <p class="mb-0 text-muted">@Details</p>
+
+    @if (!string.IsNullOrEmpty(ImagePath))
+    {
+        <div class="image-container mb-3">
+            <img src="@ImagePath" alt="Event Image" class="img-fluid rounded" style="max-height: 100px; object-fit: cover;" />
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Description { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Details { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ImagePath { get; set; } = string.Empty;
+}

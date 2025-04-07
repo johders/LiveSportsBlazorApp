@@ -1,0 +1,4 @@
+﻿.invisible-cell {
+    color: transparent;
+    pointer-events: none;
+}

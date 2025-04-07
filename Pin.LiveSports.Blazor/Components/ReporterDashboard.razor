@@ -1,0 +1,58 @@
+﻿<div class="m-auto text-center border w-100 bg-info bg-opacity-25 p-3 my-3 rounded-3">
+    <h5>Reporter Dashboard</h5>
+    <button class="btn btn-secondary mb-3" @onclick="ShowManualLogForm">Manual Log</button>
+    <button class="btn btn-primary text-light mb-3" @onclick="ShowMediaLogForm">
+        <img src="images/camera.png" alt="Goal" class="img-fluid" style="max-height: 20px;" />
+        Media
+    </button>
+    <button class="btn btn-warning text-dark mb-3" @onclick="ShowYellowCardLogForm">
+        <img src="images/yellow-card.png" alt="Yellow Card" class="img-fluid" style="max-height: 20px;" />
+        Yellow Card
+    </button>
+    <button class="btn btn-danger text-light mb-3" @onclick="ShowRedCardLogForm">
+        <img src="images/red-card.png" alt="Red Card" class="img-fluid" style="max-height: 20px;" />
+        Red Card
+    </button>
+    <button class="btn btn-success text-light mb-3" @onclick="ShowSubstitutionLogForm">
+        <img src="images/substitution.png" alt="Substitution" class="img-fluid" style="max-height: 20px;" />
+        Substitution
+    </button>
+    <button class="btn btn-info text-light mb-3" @onclick="ShowGoalLogForm">
+        <img src="images/goal.png" alt="Goal" class="img-fluid" style="max-height: 20px;" />
+        Goal
+    </button>
+</div>
+
+@code {
+    [Parameter] public EventCallback<string> OnLogTypeSelected { get; set; }
+
+    private async Task ShowManualLogForm()
+    {
+        await OnLogTypeSelected.InvokeAsync("Manual");
+    }
+
+    private async Task ShowMediaLogForm()
+    {
+        await OnLogTypeSelected.InvokeAsync("Media");
+    }
+
+    private async Task ShowYellowCardLogForm()
+    {
+        await OnLogTypeSelected.InvokeAsync("YellowCard");
+    }
+
+    private async Task ShowRedCardLogForm()
+    {
+        await OnLogTypeSelected.InvokeAsync("RedCard");
+    }
+
+    private async Task ShowSubstitutionLogForm()
+    {
+        await OnLogTypeSelected.InvokeAsync("Substitution");
+    }
+
+    private async Task ShowGoalLogForm()
+    {
+        await OnLogTypeSelected.InvokeAsync("Goal");
+    }
+}
